@@ -1,0 +1,57 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+    image: farpostbooks_backend:${FARPOSTBOOKS_BACKEND_VERSION:-latest}
+    restart: always
+    env_file:
+    - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      FARPOSTBOOKS_BACKEND_HOST: 0.0.0.0
+      FARPOSTBOOKS_BACKEND_DB_HOST: farpostbooks_backend-db
+      FARPOSTBOOKS_BACKEND_DB_PORT: 5432
+      FARPOSTBOOKS_BACKEND_DB_USER: farpostbooks_backend
+      FARPOSTBOOKS_BACKEND_DB_PASS: farpostbooks_backend
+      FARPOSTBOOKS_BACKEND_DB_BASE: farpostbooks_backend
+
+  db:
+    image: postgres:13.8-bullseye
+    hostname: farpostbooks_backend-db
+    environment:
+      POSTGRES_PASSWORD: "farpostbooks_backend"
+      POSTGRES_USER: "farpostbooks_backend"
+      POSTGRES_DB: "farpostbooks_backend"
+    volumes:
+    - farpostbooks_backend-db-data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: pg_isready -U farpostbooks_backend
+      interval: 2s
+      timeout: 3s
+      retries: 40
+
+  migrator:
+    image: farpostbooks_backend:${FARPOSTBOOKS_BACKEND_VERSION:-latest}
+    restart: "no"
+    command: aerich upgrade
+    environment:
+      FARPOSTBOOKS_BACKEND_DB_HOST: farpostbooks_backend-db
+      FARPOSTBOOKS_BACKEND_DB_PORT: 5432
+      FARPOSTBOOKS_BACKEND_DB_USER: farpostbooks_backend
+      FARPOSTBOOKS_BACKEND_DB_PASS: farpostbooks_backend
+      FARPOSTBOOKS_BACKEND_DB_BASE: farpostbooks_backend
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+
+volumes:
+  farpostbooks_backend-db-data:
+    name: farpostbooks_backend-db-data
