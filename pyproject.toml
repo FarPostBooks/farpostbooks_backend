@@ -39,6 +39,7 @@ pytest-env = "^0.8.1"
 asynctest = "^0.13.0"
 nest-asyncio = "^1.5.6"
 httpx = "^0.23.3"
+Faker="^17.0.0"
 
 [tool.isort]
 profile = "black"
