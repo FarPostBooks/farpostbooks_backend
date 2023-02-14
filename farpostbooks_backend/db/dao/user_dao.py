@@ -41,3 +41,21 @@ class UserDAO:
         return await UserModel.get_or_none(
             id=telegram_id,
         )
+
+    @staticmethod
+    async def data_change_user(
+        telegram_id: int,
+        position: str,
+        about: str,
+    ) -> None:
+        """
+        Изменить информацию о пользователе по его Telegram ID.
+
+        :param telegram_id: Telegram ID.
+        :param position: Должность.
+        :param about: Интересы.
+        """
+        await UserModel.filter(id=telegram_id).update(
+            position=position,
+            about=about,
+        )
