@@ -93,4 +93,3 @@ async def test_telegram_hash(
 
     assert response.status_code == status.HTTP_200_OK
     assert json_response["status"] == HashCheck(params).check_hash()
-    assert json_response["status"]

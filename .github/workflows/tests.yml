@@ -2,9 +2,7 @@ name: Testing farpostbooks_backend
 
 on:
   push:
-    branches: ["main"]
   pull_request:
-    branches: ["main"]
 
 jobs:
   black:
