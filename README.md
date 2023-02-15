@@ -1,153 +1,122 @@
-# farpostbooks_backend
+# FarPostBooks - Backend
 
-This project was generated using fastapi_template.
+
+## API Endpoints:
+- [ ] `GET /users/me` - Информация о себе
+- [x] `GET /users/telegram_hash` - Проверка валидности Telegram Hash **(TEMP?)**
+- [x] `GET /users/{telegram_id}` - Проверка существования пользователя
+- [x] `PUT /users/{telegram_id}` - Обновление данных пользователя
+- [ ] `POST /users/{telegram_id}` - Создание нового пользователя
+
+
+- [ ] `GET /books` - Список общего списка книг (ограничен по limit/offset)
+- [ ] `GET /books/{book_id}` - Получение информации о книге по ISBN
+- [ ] `POST /books/{book_id}` - Добавление новой книги по ISBN
+
+
+- [ ] `GET /users/{telegram_id}/books` - список всех книг юзера (ограниченный)
+- [ ] `GET /users/{telegram_id}/books/{book_id}` - Получение подробной информации о книге пользователя по ISBN
+- [ ] `PUT /users/{telegram_id}/books/{book_id}` - Обновление информации о книге пользователя (timestamp, rating)
+- [ ] `POST /users/{telegram_id}/books/{book_id}` - Добавление новой книги
+
+Список будет обновляться...
 
 ## Poetry
 
-This project uses poetry. It's a modern dependency management
-tool.
-
-To run the project use this set of commands:
-
+Для запуска проекта, используя poetry:
 ```bash
 poetry install
 poetry run python -m farpostbooks_backend
 ```
 
-This will start the server on the configured host.
+Проект будет запущен на хосте, указанном в `.env`.
 
-You can find swagger documentation at `/api/docs`.
+Документация: `/api/docs`.\
+Документация: `/api/redoc`.
 
-You can read more about poetry here: https://python-poetry.org/
 
 ## Docker
 
-You can start the project with docker using this command:
-
+Запуск проекта, используя Docker:
 ```bash
 docker-compose -f deploy/docker-compose.yml --project-directory . up --build
 ```
 
-If you want to develop in docker with autoreload add `-f deploy/docker-compose.dev.yml` to your docker command.
-Like this:
-
+Запуск проекта для разработки в Docker с авто-перезагрузкой:
 ```bash
 docker-compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml --project-directory . up
 ```
 
-This command exposes the web application on port 8000, mounts current directory and enables autoreload.
-
-But you have to rebuild image every time you modify `poetry.lock` or `pyproject.toml` with this command:
-
+При обновлении `poetry.lock` или `pyproject.toml` требуется пересобрать image с помощью команды:
 ```bash
 docker-compose -f deploy/docker-compose.yml --project-directory . build
 ```
 
-## Project structure
+## Структура проекта
 
 ```bash
 $ tree "farpostbooks_backend"
 farpostbooks_backend
-├── conftest.py  # Fixtures for all tests.
-├── db  # module contains db configurations
-│   ├── dao  # Data Access Objects. Contains different classes to interact with database.
-│   └── models  # Package contains different models for ORMs.
-├── __main__.py  # Startup script. Starts uvicorn.
-├── services  # Package for different external services such as rabbit or redis etc.
-├── settings.py  # Main configuration settings for project.
-├── static  # Static content.
-├── tests  # Tests for project.
-└── web  # Package contains web server. Handlers, startup config.
-    ├── api  # Package with all handlers.
-    │   └── router.py  # Main router.
-    ├── application.py  # FastAPI application configuration.
-    └── lifetime.py  # Contains actions to perform on startup and shutdown.
+├── conftest.py  # Фикстуры для всех тестов.
+├── db  # Конфигурация базы данных.
+│   ├── dao  # Объекты доступа к данным. Содержит различные классы для взаимодействия с базой данных.
+│   └── models  # Модели для Tortoise ORM.
+├── __main__.py  # Запуск проекта, используя uvicorn.
+├── services  # Взаимодействие со сторонними сервисами.
+├── settings.py  # Основные параметры конфигурации проекта.
+├── static  # Статика (документация).
+├── tests  # Система тестирования.
+└── web  # Веб-сервер. Обработчики, конфиг для запуска.
+    ├── api  # Все хендлеры.
+    │   └── router.py  # Главный роутер и подгрузка остальных.
+    ├── application.py  # Конфигурация для FastAPI.
+    └── lifetime.py  # Действия при запуске/остановке.
 ```
 
-## Configuration
+## Конфигурация
+Все переменные окружения должны начинаться с префикса `FARPOSTBOOKS_BACKEND_`
 
-This application can be configured with environment variables.
-
-You can create `.env` file in the root directory and place all
-environment variables here.
-
-All environment variabels should start with "FARPOSTBOOKS_BACKEND_" prefix.
-
-For example if you see in your "farpostbooks_backend/settings.py" a variable named like
-`random_parameter`, you should provide the "FARPOSTBOOKS_BACKEND_RANDOM_PARAMETER"
-variable to configure the value. This behaviour can be changed by overriding `env_prefix` property
-in `farpostbooks_backend.settings.Settings.Config`.
-
-An exmaple of .env file:
-```bash
-FARPOSTBOOKS_BACKEND_RELOAD="True"
-FARPOSTBOOKS_BACKEND_PORT="8000"
-FARPOSTBOOKS_BACKEND_ENVIRONMENT="dev"
-```
-
-You can read more about BaseSettings class here: https://pydantic-docs.helpmanual.io/usage/settings/
+Настройки переменных окружения находятся в `farpostbooks_backend.settings.Settings`.
 
 ## Pre-commit
 
-To install pre-commit simply run inside the shell:
+Автоматическая проверка кода перед коммитом изменений. \
+Конфигурация находится в `.pre-commit-config.yaml`.
+
+Проверка кода происходит с использованием:
+* black (форматирование кода);
+* mypy (валидация тайп хинтинга);
+* isort (сортировка импортов);
+* flake8 (выявление возможных ошибок);
+
+
+## Миграции
+
+
 ```bash
-pre-commit install
-```
-
-pre-commit is very useful to check your code before publishing it.
-It's configured using .pre-commit-config.yaml file.
-
-By default it runs:
-* black (formats your code);
-* mypy (validates types);
-* isort (sorts imports in all files);
-* flake8 (spots possibe bugs);
-
-
-You can read more about pre-commit here: https://pre-commit.com/
-
-## Migrations
-
-If you want to migrate your database, you should run following commands:
-```bash
-# Upgrade database to the last migration.
+# Обновление БД до последней миграции (автоматически при запуске).
 aerich upgrade
 ```
 
-### Reverting migrations
+### Откат миграций
 
-If you want to revert migrations, you should run:
+Для отката миграций используется команда:
 ```bash
 aerich downgrade
 ```
 
-### Migration generation
+### Генерация миграций
 
-To generate migrations you should run:
+После обновления моделей требуется перегенерировать миграции командой:
 ```bash
 aerich migrate
 ```
 
 
-## Running tests
+## Запуск тестов
 
-If you want to run it in docker, simply run:
-
+Запуск тестов в докере с помощью команды:
 ```bash
 docker-compose -f deploy/docker-compose.yml --project-directory . run --rm api pytest -vv .
 docker-compose -f deploy/docker-compose.yml --project-directory . down
-```
-
-For running tests on your local machine.
-1. you need to start a database.
-
-I prefer doing it with docker:
-```
-docker run -p "5432:5432" -e "POSTGRES_PASSWORD=farpostbooks_backend" -e "POSTGRES_USER=farpostbooks_backend" -e "POSTGRES_DB=farpostbooks_backend" postgres:13.8-bullseye
-```
-
-
-2. Run the pytest.
-```bash
-pytest -vv .
 ```
