@@ -42,16 +42,16 @@ class BookDAO:
 
     @staticmethod
     async def search_book(
-        isbn_id: int,
+        book_id: int,
     ) -> Optional[BookModel]:
         """
         Получить информацию о книге по его ISBN.
 
-        :param isbn_id: ISBN номер книги.
+        :param book_id: ISBN номер книги.
         :return: stream of dummies.
         """
         return await BookModel.get_or_none(
-            id=isbn_id,
+            id=book_id,
         )
 
     @staticmethod
