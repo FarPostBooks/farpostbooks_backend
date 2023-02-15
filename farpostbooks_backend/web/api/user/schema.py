@@ -1,7 +1,10 @@
 from datetime import datetime
 from typing import Optional
 
+from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel, Field
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", scheme_name="JWT")
 
 
 class UserModelDTO(BaseModel):
@@ -17,6 +20,12 @@ class UserModelDTO(BaseModel):
         orm_mode = True
 
 
+class TokenData(BaseModel):
+    """Данные в JWT токене."""
+
+    id: int
+
+
 class TelegramUserDTO(BaseModel):
     """DTO для модели данных из Telegram Login Widget'а."""
 
@@ -29,10 +38,25 @@ class TelegramUserDTO(BaseModel):
     hash: str
 
 
-class IsTelegramHashValid(BaseModel):
-    """IsTelegramHashValid model."""
+class AuthorizationToken(BaseModel):
+    """Токен для авторизации пользователя."""
 
-    status: bool
+    access_token: str
+
+
+class UserModelCreateDTO(BaseModel):
+    """Данные для заполнения пользователем при регистрации."""
+
+    name: str
+    position: str
+    about: str
+
+
+class CreateUserDTO(BaseModel):
+    """Модель для регистрации нового пользователя."""
+
+    telegram: TelegramUserDTO
+    user: UserModelCreateDTO
 
 
 class IsUserExist(BaseModel):

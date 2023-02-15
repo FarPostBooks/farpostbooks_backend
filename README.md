@@ -2,11 +2,11 @@
 
 
 ## API Endpoints:
-- [ ] `GET /users/me` - Информация о себе
-- [x] `GET /users/telegram_hash` - Проверка валидности Telegram Hash **(TEMP?)**
+- [x] `GET /users/me` - Информация о себе
+- [x] `GET /users/token` - Получение токена, если пользователь зарегистрирован
 - [x] `GET /users/{telegram_id}` - Проверка существования пользователя
 - [x] `PUT /users/{telegram_id}` - Обновление данных пользователя
-- [ ] `POST /users/{telegram_id}` - Создание нового пользователя
+- [x] `POST /users/{telegram_id}` - Создание нового пользователя
 
 
 - [ ] `GET /books` - Список общего списка книг (ограничен по limit/offset)

@@ -52,6 +52,11 @@ class Settings(BaseSettings):
     sentry_dsn: Optional[str] = None
     sentry_sample_rate: float = 1.0
 
+    # OAuth2 configuration
+    secret_key: str = "secret_key"
+    algorithm: str = "HS256"
+    expire_minutes: int = 30
+
     # Telegram configuration
     bot_token: str = "42:TOKEN"
 
