@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from tortoise.queryset import Q
 
 from farpostbooks_backend.db.models.userbook_model import UserBookModel
@@ -7,8 +8,6 @@ from farpostbooks_backend.db.models.userbook_model import UserBookModel
 class UserBookDAO:
     """Класс для доступа к таблице истории взятия книг."""
 
-    # По поводу возращаемых значений. хз, я думаю тут хорошо делать
-    # делать провеку по состоянии транзакции, и уже возвращать true or false
     @staticmethod
     async def get_book(
         user_id: int,
@@ -38,7 +37,7 @@ class UserBookDAO:
         :param book_id: ISBN выбранной книги.
         """
         await UserBookModel.filter(Q(user=user_id) & Q(book=book_id)).update(
-            back_timestamp=datetime.utcnow()
+            back_timestamp=datetime.utcnow(),
         )
 
     @staticmethod
