@@ -8,22 +8,22 @@ class BookDAO:
 
     @staticmethod
     async def create_book_model(
-        isbn_id: int,
+        isbn: int,
         name: str,
         description: str,
         image: str,
     ) -> BookModel:
         """
-        Добавить новую книгу.
+        Добавление новой книги.
 
-        :param isbn_id: ISBN номер книги.
+        :param isbn: ISBN номер книги.
         :param name: Название книги.
         :param description: Описание книги.
         :param image: Фотография книги.
         :return: Модель новой книги.
         """
         return await BookModel.create(
-            id=isbn_id,
+            id=isbn,
             name=name,
             description=description,
             image=image,
@@ -31,21 +31,21 @@ class BookDAO:
 
     @staticmethod
     async def delete_book_model(
-        isbn_id: int,
+        isbn: int,
     ) -> None:
         """
         Удаление книги.
 
-        :param isbn_id: ISBN номер книги.
+        :param isbn: ISBN номер книги.
         """
-        await BookModel.filter(id=isbn_id).delete()
+        await BookModel.filter(id=isbn).delete()
 
     @staticmethod
-    async def search_bok(
+    async def search_book(
         isbn_id: int,
     ) -> Optional[BookModel]:
         """
-        Получить информацию о книге по его ISDN.
+        Получить информацию о книге по его ISBN.
 
         :param isbn_id: ISBN номер книги.
         :return: stream of dummies.
@@ -55,7 +55,7 @@ class BookDAO:
         )
 
     @staticmethod
-    async def list_book(
+    async def get_books(
         limit: int,
         offset: int,
     ) -> List[BookModel]:

@@ -26,12 +26,12 @@ class UserBookDAO:
         )
 
     @staticmethod
-    async def drop_book(
+    async def return_book(
         user_id: int,
         book_id: int,
     ) -> None:
         """
-        Отдача киниги обратно на полку.
+        Возвращение книги обратно на полку.
 
         :param user_id: Telegram ID пользователя.
         :param book_id: ISBN выбранной книги.
@@ -41,18 +41,18 @@ class UserBookDAO:
         )
 
     @staticmethod
-    async def grading(
-        user_id: int,
+    async def rating(
+        telegram_id: int,
         book_id: int,
         rating: int,
     ) -> None:
         """
         Выставление рейтинга после прочтения.
 
-        :param user_id: Telegram ID пользователя.
+        :param telegram_id: Telegram ID пользователя.
         :param book_id: ISBN выбранной книги.
         :param rating: Оценка книги.
         """
-        await UserBookModel.filter(Q(user=user_id) & Q(book=book_id)).update(
+        await UserBookModel.filter(Q(user=telegram_id) & Q(book=book_id)).update(
             rating=rating,
         )
