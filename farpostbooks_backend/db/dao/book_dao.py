@@ -8,7 +8,7 @@ class BookDAO:
 
     @staticmethod
     async def create_book_model(
-        isbn: int,
+        book_id: int,
         name: str,
         description: str,
         image: str,
@@ -16,14 +16,14 @@ class BookDAO:
         """
         Добавление новой книги.
 
-        :param isbn: ISBN номер книги.
+        :param book_id: ISBN книги.
         :param name: Название книги.
         :param description: Описание книги.
         :param image: Фотография книги.
         :return: Модель новой книги.
         """
         return await BookModel.create(
-            id=isbn,
+            id=book_id,
             name=name,
             description=description,
             image=image,
@@ -47,7 +47,7 @@ class BookDAO:
         """
         Получить информацию о книге по его ISBN.
 
-        :param book_id: ISBN номер книги.
+        :param book_id: ISBN книги.
         :return: stream of dummies.
         """
         return await BookModel.get_or_none(

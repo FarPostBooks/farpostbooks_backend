@@ -23,7 +23,7 @@ async def create_book(
     :return: Возвращаем созданную книгу.
     """
     return await book_dao.create_book_model(
-        isbn=book_id,
+        book_id=book_id,
         name="name",
         description="description",
         image="image",

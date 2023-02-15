@@ -19,9 +19,9 @@ async def test_exising(
     """Тест эдпоинта и проверка существования книги и правильной работы БД."""
     dao = BookDAO()
 
-    isbn = secrets.randbelow(10000000000000)
+    isbn = int(fake.isbn13().replace("-", ""))
     book = await dao.create_book_model(
-        isbn=isbn,
+        book_id=isbn,
         name=fake.sentence(nb_words=5),
         description=fake.sentence(nb_words=5),
         image=fake.image_url(),
@@ -44,12 +44,12 @@ async def test_add(
     client: AsyncClient,
 ) -> None:
     """Тест эндпоинта с добавлением данных о книги в БД."""
-    isbn = secrets.randbelow(10000000000000)
+    isbn = int(fake.isbn13().replace("-", ""))
     url = fastapi_app.url_path_for("create_book", book_id=isbn)
-    responce = await client.post(url)
-    json_response = responce.json()
+    response = await client.post(url)
+    json_response = response.json()
 
-    assert responce.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_200_OK
     assert json_response["id"] == isbn
     assert json_response["name"] == "name"
     assert json_response["description"] == "description"
