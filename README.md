@@ -10,8 +10,8 @@
 
 
 - [ ] `GET /books` - Список общего списка книг (ограничен по limit/offset)
-- [ ] `GET /books/{book_id}` - Получение информации о книге по ISBN
-- [ ] `POST /books/{book_id}` - Добавление новой книги по ISBN
+- [x] `GET /books/{book_id}` - Получение информации о книге по ISBN
+- [x] `POST /books/{book_id}` - Добавление новой книги по ISBN
 
 
 - [ ] `GET /users/{telegram_id}/books` - список всех книг юзера (ограниченный)
