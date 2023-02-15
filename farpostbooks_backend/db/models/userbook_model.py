@@ -19,7 +19,7 @@ class UserBookModel(models.Model):
         on_delete="CASCADE",
     )
     get_timestamp = fields.DatetimeField(auto_now_add=True)
-    back_timestamp = fields.DatetimeField()
+    back_timestamp = fields.DatetimeField(null=True)
     rating = fields.SmallIntField()
 
     def __str__(self) -> str:

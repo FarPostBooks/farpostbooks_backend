@@ -96,6 +96,14 @@ per-file-ignores =
   ; Found wrong metadata variable
   WPS410,
 
+  ; all dao files
+  */dao/*.py:
+  ; ignore import Q
+  WPS347,
+  ; ignore high Jones Complexity
+  WPS221,
+
+
 exclude =
   ./.cache,
   ./.git,

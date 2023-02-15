@@ -15,7 +15,7 @@ class UserDAO:
         about: str,
     ) -> UserModel:
         """
-        Добавить нового пользователя.
+        Добавление нового пользователя.
 
         :param telegram_id: Telegram ID.
         :param name: Имя фамилия.
@@ -35,7 +35,7 @@ class UserDAO:
         telegram_id: int,
     ) -> Optional[UserModel]:
         """
-        Получить информацию о пользователе по его Telegram ID.
+        Получение информации о пользователе по его Telegram ID.
 
         :param telegram_id: Telegram ID.
         :return: Объект пользователя, если он существует.
@@ -50,7 +50,7 @@ class UserDAO:
         new_user_data: UserModelUpdateDTO,
     ) -> Optional[UserModel]:
         """
-        Изменить информацию о пользователе по его Telegram ID.
+        Изменение информации о пользователе по его Telegram ID.
 
         :param telegram_id: Telegram ID.
         :param new_user_data: Pydantic модель для сохранения новых данных.

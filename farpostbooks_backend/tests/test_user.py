@@ -7,6 +7,7 @@ from httpx import AsyncClient
 from starlette import status
 
 from farpostbooks_backend.db.dao.user_dao import UserDAO
+from farpostbooks_backend.services.telegram_hash import HashCheck
 
 fake = Faker(locale="ru_RU", seed=secrets.randbelow(1000))
 
@@ -68,3 +69,28 @@ async def test_updating(
     assert updated_user.position == new_position
     assert updated_user.about == user.about
     assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.anyio
+async def test_telegram_hash(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+) -> None:
+    """Тест эндпоинта с проверкой Telegram Hash."""
+    url = fastapi_app.url_path_for("check_telegram_hash")
+    params = {
+        "id": "1",
+        "first_name": "Pavel",
+        "last_name": "Durov",
+        "username": "durov",
+        "photo_url": "https://t.me/i/userpic/320/durov.jpg",
+        "auth_date": "1676457798",
+        "hash": "cd1d17e51e620c0aa96a7b1d62a4ca99b936872b45e58a869d81a66661902c72",
+    }
+
+    response = await client.get(url, params=params)
+    json_response = response.json()
+
+    assert response.status_code == status.HTTP_200_OK
+    assert json_response["status"] == HashCheck(params).check_hash()
+    assert json_response["status"]
