@@ -14,7 +14,8 @@ class HashCheck:
 
         :param data: Данные от Telegram Login Widget'а.
         """
-        self.hash: str = data.pop("hash")
+        if "hash" in data:
+            self.hash: str = data.pop("hash")
         self.api_token: str = settings.bot_token
         self.secret_key: bytes = hashlib.sha256(self.api_token.encode()).digest()
         self.data: Dict[str, Union[str, int]] = data

@@ -85,11 +85,12 @@ async def test_telegram_hash(
         "username": "durov",
         "photo_url": "https://t.me/i/userpic/320/durov.jpg",
         "auth_date": "1676457798",
-        "hash": "cd1d17e51e620c0aa96a7b1d62a4ca99b936872b45e58a869d81a66661902c72",
     }
+    params["hash"] = HashCheck(params).calc_hash()
 
     response = await client.get(url, params=params)
     json_response = response.json()
 
     assert response.status_code == status.HTTP_200_OK
     assert json_response["status"] == HashCheck(params).check_hash()
+    assert json_response["status"]
