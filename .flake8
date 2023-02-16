@@ -105,7 +105,7 @@ per-file-ignores =
   ; ignore high Jones Complexity
   WPS221,
   ; ignore too many arguments
-  WPS211
+  WPS211,
 
 
 exclude =
