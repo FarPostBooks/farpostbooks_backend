@@ -1,7 +1,7 @@
 from typing import Optional
 
 from farpostbooks_backend.db.models.user_model import UserModel
-from farpostbooks_backend.web.api.user.schema import UserModelUpdateDTO
+from farpostbooks_backend.web.api.schema import UserModelUpdateDTO
 
 
 class UserDAO:
