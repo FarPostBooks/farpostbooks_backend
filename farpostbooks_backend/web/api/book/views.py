@@ -1,11 +1,15 @@
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import APIRouter
 from fastapi.param_functions import Depends
 
 from farpostbooks_backend.db.dao.book_dao import BookDAO
 from farpostbooks_backend.db.models.book_model import BookModel
-from farpostbooks_backend.web.api.book.schema import BookModelDTO
+from farpostbooks_backend.web.api.book.schema import (
+    BookIntroduction,
+    BookModelDTO,
+    ScrollDTO,
+)
 
 router = APIRouter()
 
@@ -43,3 +47,18 @@ async def search_book(
     :return: Возвращаем информацию о книге.
     """
     return await book_dao.search_book(book_id=book_id)
+
+
+@router.get("/books", response_model=List[BookIntroduction])
+async def get_books(
+    scroll_dto: ScrollDTO,
+    book_dao: BookDAO = Depends(),
+) -> List[BookModel]:
+    """
+    Получение информации об общем списке книг.
+
+    :param scroll_dto: DTO для работы со скроллингом.
+    :param book_dao: DAO для модели книги.
+    :return: Возвращаем список книг.
+    """
+    return await book_dao.get_books(**scroll_dto.dict(exclude_unset=True))

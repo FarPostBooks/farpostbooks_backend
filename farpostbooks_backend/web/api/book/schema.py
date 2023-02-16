@@ -1,6 +1,7 @@
 from datetime import datetime
+from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class BookModelDTO(BaseModel):
@@ -14,3 +15,21 @@ class BookModelDTO(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class BookIntroduction(BaseModel):
+    """DTO для отображения книги при скроллинге."""
+
+    id: int
+    name: str
+    image: str
+
+    class Config:
+        orm_mode = True
+
+
+class ScrollDTO(BaseModel):
+    """DTO для скроллинга."""
+
+    limit: Optional[int] = Field(None)
+    offset: Optional[int] = Field(None)

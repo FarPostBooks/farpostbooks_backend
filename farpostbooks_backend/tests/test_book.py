@@ -54,3 +54,34 @@ async def test_add(
     assert json_response["name"] == "name"
     assert json_response["description"] == "description"
     assert json_response["image"] == "image"
+
+
+@pytest.mark.anyio
+async def test_scroll(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+) -> None:
+    """Тест эдпоинта по скроллингу главной странички."""
+    dao = BookDAO()
+
+    isbn = int(fake.isbn13().replace("-", ""))
+    book = await dao.create_book_model(
+        book_id=isbn,
+        name=fake.sentence(nb_words=5),
+        description=fake.sentence(nb_words=5),
+        image=fake.image_url(),
+    )
+    url = fastapi_app.url_path_for("get_books")
+    response = await client.get(
+        url,
+        params={
+            "limit": 1,
+            "offset": 0,
+        },
+    )
+    json_response = response.json()
+
+    assert response.status_code == status.HTTP_200_OK
+    assert json_response[0]["id"] == book.id
+    assert json_response[0]["name"] == book.name
+    assert json_response[0]["image"] == book.image
