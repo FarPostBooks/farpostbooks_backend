@@ -49,6 +49,13 @@ async def update_user(
     :param new_user_data: Pydantic модель с новыми данными о пользователе.
     :param _: Текущий пользователь по JWT токену.
     :param user_dao: DAO для модели пользователя.
+    :raises HTTPException: Пользователь не найден.
     :return: Модель пользователя с измененными данными.
     """
-    return await user_dao.change_user_model(telegram_id, new_user_data)
+    user = await user_dao.change_user_model(telegram_id, new_user_data)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Пользователь не найден.",
+        )
+    return user
