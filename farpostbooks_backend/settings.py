@@ -61,6 +61,10 @@ class Settings(BaseSettings):
     # Telegram configuration
     bot_token: str = "42:TOKEN"
 
+    # Google Books
+    google_books_url: str = "https://www.googleapis.com/books/v1/volumes"
+    google_api_key: Optional[str] = None
+
     @property
     def db_url(self) -> URL:
         """

@@ -10,7 +10,6 @@ from jose import jwt
 from starlette import status
 
 from farpostbooks_backend.db.dao.user_dao import UserDAO
-from farpostbooks_backend.services.access_token import create_access_token
 from farpostbooks_backend.services.telegram_hash import HashCheck
 from farpostbooks_backend.settings import settings
 
@@ -111,47 +110,16 @@ async def test_create_user(
 async def test_get_me(
     fastapi_app: FastAPI,
     client: AsyncClient,
+    user_client: AsyncClient,
     fake: Faker,
 ) -> None:
     """Тест эндпоинта для получения информации о себе."""
-    dao = UserDAO()
     url = fastapi_app.url_path_for("get_me")
-
-    simple_profile = fake.simple_profile()
-    telegram_id = secrets.randbelow(1000000000000)
-    params = {
-        "id": str(telegram_id),
-        "first_name": simple_profile["name"],
-        "username": simple_profile["username"],
-        "photo_url": fake.image_url(),
-        "auth_date": int(time.mktime(datetime.utcnow().timetuple())),
-    }
-    params["hash"] = HashCheck(params).calc_hash()
-
-    user = await dao.create_user_model(
-        telegram_id=telegram_id,
-        name=f"{fake.first_name()} {fake.last_name()}",
-        position=fake.job(),
-        about=fake.sentence(nb_words=10),
-    )
-    access_token = create_access_token(
-        data={
-            "sub": params["id"],
-            "scopes": [user.status],
-        },
-    )
 
     response = await client.get(url)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    response = await client.get(
-        url,
-        headers={
-            "Authorization": f"Bearer {access_token}",
-        },
-    )
+    response = await user_client.get(url)
     json_response = response.json()
     assert response.status_code == status.HTTP_200_OK
-    assert json_response["id"] == user.id
-    assert json_response["name"] == user.name
-    assert json_response["position"] == user.position
+    assert json_response["id"] == 2

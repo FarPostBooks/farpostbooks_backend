@@ -8,9 +8,9 @@ from farpostbooks_backend.db.dao.book_dao import BookDAO
 
 
 @pytest.mark.anyio
-async def test_get_book(
+async def test_search_book(
     fastapi_app: FastAPI,
-    admin_client: AsyncClient,
+    user_client: AsyncClient,
     fake: Faker,
 ) -> None:
     """Тест эдпоинта и проверка существования книги и правильной работы БД."""
@@ -27,7 +27,7 @@ async def test_get_book(
     )
 
     url = fastapi_app.url_path_for("search_book", book_id=isbn)
-    response = await admin_client.get(url)
+    response = await user_client.get(url)
     json_response = response.json()
 
     assert response.status_code == status.HTTP_200_OK
@@ -38,28 +38,31 @@ async def test_get_book(
 
 
 @pytest.mark.anyio
-async def test_add(
+async def test_create_book(
     fastapi_app: FastAPI,
     admin_client: AsyncClient,
     fake: Faker,
 ) -> None:
     """Тест эндпоинта с добавлением данных о книги в БД."""
-    isbn = int(fake.isbn13().replace("-", ""))
+    dao = BookDAO()
+
+    isbn = 9785911511036
     url = fastapi_app.url_path_for("create_book", book_id=isbn)
     response = await admin_client.post(url)
     json_response = response.json()
+    book = await dao.search_book(isbn)
 
     assert response.status_code == status.HTTP_200_OK
-    assert json_response["id"] == isbn
-    assert json_response["name"] == "name"
-    assert json_response["description"] == "description"
-    assert json_response["image"] == "image"
+    assert book is not None
+    assert json_response["id"] == book.id
+    assert json_response["name"] == book.name
+    assert json_response["description"] == book.description
 
 
 @pytest.mark.anyio
-async def test_scroll(
+async def test_get_books(
     fastapi_app: FastAPI,
-    admin_client: AsyncClient,
+    user_client: AsyncClient,
     fake: Faker,
 ) -> None:
     """Тест эндпоинта для скроллинга главной странички."""
@@ -68,7 +71,7 @@ async def test_scroll(
     isbn = int(fake.isbn13().replace("-", ""))
     url = fastapi_app.url_path_for("get_books")
 
-    response = await admin_client.get(url)
+    response = await user_client.get(url)
     assert response.status_code == status.HTTP_200_OK
     assert not response.json()
 
@@ -80,7 +83,7 @@ async def test_scroll(
         author=fake.name(),
         publish=fake.year(),
     )
-    response = await admin_client.get(
+    response = await user_client.get(
         url,
         params={
             "limit": 1,
@@ -89,5 +92,5 @@ async def test_scroll(
     )
     assert response.json()[0]["id"] == book.id
 
-    response = await admin_client.get(url)
+    response = await user_client.get(url)
     assert response.json()[0]["id"] == book.id

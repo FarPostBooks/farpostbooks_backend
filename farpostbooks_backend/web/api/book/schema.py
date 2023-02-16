@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import Optional
+from typing import Any, Dict, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, root_validator
 
 
 class BookModelDTO(BaseModel):
@@ -11,10 +11,30 @@ class BookModelDTO(BaseModel):
     name: str
     description: str
     image: str
-    added_timestamp: datetime
+    author: str
+    publish: str
+    added_timestamp: Optional[datetime]
 
     class Config:
         orm_mode = True
+
+
+class CreateBookModelDTO(BookModelDTO):
+    """DTO для добавления книги в базу данных."""
+
+    @classmethod
+    @root_validator()
+    def rename_fields_for_db(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Переименование книги.
+
+        :param values: Значения исходной модели.
+        :return: Словарь с переименованными ключами.
+        """
+        if "id" in values:
+            values["book_id"] = values.get("id")
+            values.pop("id")
+        return values
 
 
 class BookIntroduction(BaseModel):

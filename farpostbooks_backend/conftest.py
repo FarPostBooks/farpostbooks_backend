@@ -31,9 +31,9 @@ def fake(
     anyio_backend: Any,
 ) -> Faker:
     """
-    Fixture that creates client for requesting server.
+    Создание экземпляра класса для создания фековых данных.
 
-    :param anyio_backend: anyio_backend
+    :param anyio_backend: anyio_backend.
     :return: Экземпляр класса для создания фейковых данных.
     """
     return Faker(locale="ru_RU", seed=secrets.randbelow(1000))
@@ -42,9 +42,9 @@ def fake(
 @pytest.fixture(autouse=True)
 async def initialize_db() -> AsyncGenerator[None, None]:
     """
-    Initialize models and database.
+    Инициализация моделей и базы данных.
 
-    :yields: Nothing.
+    :yields: Ничего.
     """
     initializer(
         MODELS_MODULES,
@@ -62,9 +62,9 @@ async def initialize_db() -> AsyncGenerator[None, None]:
 @pytest.fixture
 def fastapi_app() -> FastAPI:
     """
-    Fixture for creating FastAPI app.
+    Фикстура для создания FastAPI приложения.
 
-    :return: fastapi app with mocked dependencies.
+    :return: Приложение FastAPI с фиктивными зависимостями.
     """
     application = get_app()
     return application  # noqa: WPS331
@@ -76,13 +76,47 @@ async def client(
     anyio_backend: Any,
 ) -> AsyncGenerator[AsyncClient, None]:
     """
-    Fixture that creates client for requesting server.
+    Фикстура, создающая клиента для запроса к серверу.
 
-    :param fastapi_app: the application.
+    :param fastapi_app: FastAPI приложение.
     :param anyio_backend: anyio_backend
-    :yield: client for the app.
+    :yield: Клиент для приложения.
     """
     async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
+        yield ac
+
+
+@pytest.fixture
+async def user_client(
+    fastapi_app: FastAPI,
+    anyio_backend: Any,
+) -> AsyncGenerator[AsyncClient, None]:
+    """
+    Фикстура, создающая авторизированного клиента для запроса к серверу.
+
+    :param fastapi_app: FastAPI приложение.
+    :param anyio_backend: anyio_backend.
+    :yield: Юзер клиент для приложения.
+    """
+    from farpostbooks_backend.db.dao.user_dao import UserDAO
+    from farpostbooks_backend.services.access_token import create_access_token
+
+    dao = UserDAO()
+
+    async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
+        user = await dao.create_user_model(
+            telegram_id=2,
+            name="user",
+            position="user",
+            about="user",
+        )
+        access_token = create_access_token(
+            data={
+                "sub": str(user.id),
+                "scopes": [user.status],
+            },
+        )
+        ac.headers = Headers({"Authorization": f"Bearer {access_token}"})
         yield ac
 
 
@@ -92,11 +126,11 @@ async def admin_client(
     anyio_backend: Any,
 ) -> AsyncGenerator[AsyncClient, None]:
     """
-    Fixture that creates admin for requesting server.
+    Фикстура, создающая клиента с правами администратора для запроса к серверу.
 
-    :param fastapi_app: the application.
-    :param anyio_backend: anyio_backend
-    :yield: admin_client for the app.
+    :param fastapi_app: FastAPI приложение.
+    :param anyio_backend: anyio_backend.
+    :yield: Админ клиент для приложения.
     """
     from farpostbooks_backend.db.dao.user_dao import UserDAO
     from farpostbooks_backend.services.access_token import create_access_token
