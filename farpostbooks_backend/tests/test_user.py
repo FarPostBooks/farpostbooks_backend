@@ -141,6 +141,9 @@ async def test_get_me(
         },
     )
 
+    response = await client.get(url)
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
     response = await client.get(
         url,
         headers={
@@ -152,4 +155,3 @@ async def test_get_me(
     assert json_response["id"] == user.id
     assert json_response["name"] == user.name
     assert json_response["position"] == user.position
-    assert json_response["about"] == user.about

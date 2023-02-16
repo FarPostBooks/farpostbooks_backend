@@ -1,19 +1,17 @@
 # FarPostBooks - Backend
-
-
+---
 ## API Endpoints:
-- [x] `GET /users/me` - Информация о себе
 - [x] `GET /users/token` - Получение токена, если пользователь зарегистрирован
-- [x] `GET /users/{telegram_id}` - Проверка существования пользователя
-- [x] `PUT /users/{telegram_id}` - Обновление данных пользователя
 - [x] `POST /users/{telegram_id}` - Создание нового пользователя
-
-
-- [ ] `GET /books` - Список общего списка книг (ограничен по limit/offset)
-- [x] `GET /books/{book_id}` - Получение информации о книге по ISBN
-- [x] `POST /books/{book_id}` - Добавление новой книги по ISBN
-
-
+----
+- [x] `GET /users/me` - Информация о себе _(scope: user)_
+- [x] `GET /users/{telegram_id}` - Получение пользователя по telegram_id _(scope: user)_
+- [x] `PUT /users/{telegram_id}` - Обновление данных пользователя _(scope: admin)_
+---
+- [x] `GET /books` - Список общего списка книг (ограничен по limit/offset) _(scope: admin)_
+- [x] `GET /books/{book_id}` - Получение информации о книге по ISBN _(scope: admin)_
+- [x] `POST /books/{book_id}` - Добавление новой книги по ISBN _(scope: admin)_
+---
 - [ ] `GET /users/{telegram_id}/books` - список всех книг юзера (ограниченный)
 - [ ] `GET /users/{telegram_id}/books/{book_id}` - Получение подробной информации о книге пользователя по ISBN
 - [ ] `PUT /users/{telegram_id}/books/{book_id}` - Обновление информации о книге пользователя (timestamp, rating)

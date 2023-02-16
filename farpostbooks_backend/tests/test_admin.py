@@ -7,6 +7,7 @@ from httpx import AsyncClient
 from starlette import status
 
 from farpostbooks_backend.db.dao.user_dao import UserDAO
+from farpostbooks_backend.services.access_token import create_access_token
 
 
 @pytest.mark.anyio
@@ -30,6 +31,39 @@ async def test_get_user(
     response = await admin_client.get(url)
 
     assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.anyio
+async def test_scopes(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    fake: Faker,
+) -> None:
+    """Тест эндпоинта недоступного обычному пользователю."""
+    dao = UserDAO()
+    url = fastapi_app.url_path_for("get_user", telegram_id=1)
+
+    telegram_id = secrets.randbelow(1000000000000)
+    user = await dao.create_user_model(
+        telegram_id=telegram_id,
+        name=f"{fake.first_name()} {fake.last_name()}",
+        position=fake.job(),
+        about=fake.sentence(nb_words=10),
+    )
+    access_token = create_access_token(
+        data={
+            "sub": str(telegram_id),
+            "scopes": [user.status],
+        },
+    )
+
+    response = await client.get(
+        url,
+        headers={
+            "Authorization": f"Bearer {access_token}",
+        },
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 @pytest.mark.anyio

@@ -62,8 +62,8 @@ class BookDAO:
 
     @staticmethod
     async def get_books(
-        limit: int,
-        offset: int,
+        limit: int = 10,
+        offset: int = 0,
     ) -> List[BookModel]:
         """
         Выгрузка списка книг на главную страницу.

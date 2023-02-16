@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class BookModelDTO(BaseModel):
@@ -31,5 +31,5 @@ class BookIntroduction(BaseModel):
 class ScrollDTO(BaseModel):
     """DTO для скроллинга."""
 
-    limit: Optional[int] = Field(None)
-    offset: Optional[int] = Field(None)
+    limit: Optional[int]
+    offset: Optional[int]
