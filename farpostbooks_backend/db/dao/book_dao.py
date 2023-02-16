@@ -12,6 +12,8 @@ class BookDAO:
         name: str,
         description: str,
         image: str,
+        author: str,
+        publish: str,
     ) -> BookModel:
         """
         Добавление новой книги.
@@ -20,6 +22,8 @@ class BookDAO:
         :param name: Название книги.
         :param description: Описание книги.
         :param image: Фотография книги.
+        :param author: Авторы книги.
+        :param publish: Дата публикации книги.
         :return: Модель новой книги.
         """
         return await BookModel.create(
@@ -27,6 +31,8 @@ class BookDAO:
             name=name,
             description=description,
             image=image,
+            author=author,
+            publish=publish,
         )
 
     @staticmethod

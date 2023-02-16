@@ -13,6 +13,7 @@ class UserDAO:
         name: str,
         position: str,
         about: str,
+        status: str = "user",
     ) -> UserModel:
         """
         Добавление нового пользователя.
@@ -21,10 +22,12 @@ class UserDAO:
         :param name: Имя фамилия.
         :param position: Должность.
         :param about: Интересы.
+        :param status: Статус пользователя для скоупов user/admin.
         :return: Модель нового пользователя.
         """
         return await UserModel.create(
             id=telegram_id,
+            status=status,
             name=name,
             position=position,
             about=about,

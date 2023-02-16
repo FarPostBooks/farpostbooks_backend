@@ -1,7 +1,6 @@
 from typing import List, Optional
 
-from fastapi import APIRouter
-from fastapi.param_functions import Depends
+from fastapi import APIRouter, Depends
 
 from farpostbooks_backend.db.dao.book_dao import BookDAO
 from farpostbooks_backend.db.models.book_model import BookModel
@@ -14,7 +13,7 @@ from farpostbooks_backend.web.api.book.schema import (
 router = APIRouter()
 
 
-@router.post("/books/{book_id}", response_model=BookModelDTO)
+@router.post("/{book_id}", response_model=BookModelDTO)
 async def create_book(
     book_id: int,
     book_dao: BookDAO = Depends(),
@@ -31,10 +30,12 @@ async def create_book(
         name="name",
         description="description",
         image="image",
+        author="author",
+        publish="2022",
     )
 
 
-@router.get("/books/{book_id}", response_model=BookModelDTO)
+@router.get("/{book_id}", response_model=BookModelDTO)
 async def search_book(
     book_id: int,
     book_dao: BookDAO = Depends(),
@@ -49,9 +50,9 @@ async def search_book(
     return await book_dao.search_book(book_id=book_id)
 
 
-@router.get("/books", response_model=List[BookIntroduction])
+@router.get("/", response_model=List[BookIntroduction])
 async def get_books(
-    scroll_dto: ScrollDTO,
+    scroll_dto: ScrollDTO = Depends(),
     book_dao: BookDAO = Depends(),
 ) -> List[BookModel]:
     """
