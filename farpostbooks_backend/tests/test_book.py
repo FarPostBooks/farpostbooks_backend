@@ -25,6 +25,8 @@ async def test_exising(
         name=fake.sentence(nb_words=5),
         description=fake.sentence(nb_words=5),
         image=fake.image_url(),
+        author=fake.name(),
+        publish=fake.year(),
     )
 
     url = fastapi_app.url_path_for("search_book", book_id=isbn)

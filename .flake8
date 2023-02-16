@@ -86,6 +86,8 @@ per-file-ignores =
   DAR101,
   ; Found too many arguments
   WPS211,
+  ; Found nested import
+  WPS433,
 
   ; all init files
   __init__.py:
@@ -102,6 +104,8 @@ per-file-ignores =
   WPS347,
   ; ignore high Jones Complexity
   WPS221,
+  ; ignore too many arguments
+  WPS211
 
 
 exclude =

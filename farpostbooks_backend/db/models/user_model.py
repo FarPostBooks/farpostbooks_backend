@@ -10,6 +10,7 @@ class UserModel(models.Model):
     """Модель для таблицы с юзерами."""
 
     id = fields.BigIntField(pk=True)
+    status = fields.CharField(max_length=16, default="user")  # noqa: WPS432
     name = fields.CharField(max_length=64)  # noqa: WPS432
     position = fields.CharField(max_length=64)  # noqa: WPS432
     about = fields.CharField(max_length=255)  # noqa: WPS432

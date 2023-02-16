@@ -10,7 +10,7 @@ from farpostbooks_backend.web.api.book.schema import BookModelDTO
 router = APIRouter()
 
 
-@router.post("/books/{book_id}", response_model=BookModelDTO)
+@router.post("/{book_id}", response_model=BookModelDTO)
 async def create_book(
     book_id: int,
     book_dao: BookDAO = Depends(),
@@ -27,10 +27,12 @@ async def create_book(
         name="name",
         description="description",
         image="image",
+        author="author",
+        publish="2022",
     )
 
 
-@router.get("/books/{book_id}", response_model=BookModelDTO)
+@router.get("/{book_id}", response_model=BookModelDTO)
 async def search_book(
     book_id: int,
     book_dao: BookDAO = Depends(),

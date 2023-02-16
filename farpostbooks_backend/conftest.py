@@ -1,9 +1,11 @@
+import secrets
 from typing import Any, AsyncGenerator
 
 import nest_asyncio
 import pytest
+from faker import Faker
 from fastapi import FastAPI
-from httpx import AsyncClient
+from httpx import AsyncClient, Headers
 from tortoise import Tortoise
 from tortoise.contrib.test import finalizer, initializer
 
@@ -22,6 +24,19 @@ def anyio_backend() -> str:
     :return: backend name.
     """
     return "asyncio"
+
+
+@pytest.fixture
+def fake(
+    anyio_backend: Any,
+) -> Faker:
+    """
+    Fixture that creates client for requesting server.
+
+    :param anyio_backend: anyio_backend
+    :return: Экземпляр класса для создания фейковых данных.
+    """
+    return Faker(locale="ru_RU", seed=secrets.randbelow(1000))
 
 
 @pytest.fixture(autouse=True)
@@ -64,7 +79,43 @@ async def client(
     Fixture that creates client for requesting server.
 
     :param fastapi_app: the application.
+    :param anyio_backend: anyio_backend
     :yield: client for the app.
     """
     async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
+        yield ac
+
+
+@pytest.fixture
+async def admin_client(
+    fastapi_app: FastAPI,
+    anyio_backend: Any,
+) -> AsyncGenerator[AsyncClient, None]:
+    """
+    Fixture that creates admin for requesting server.
+
+    :param fastapi_app: the application.
+    :param anyio_backend: anyio_backend
+    :yield: admin_client for the app.
+    """
+    from farpostbooks_backend.db.dao.user_dao import UserDAO
+    from farpostbooks_backend.services.access_token import create_access_token
+
+    dao = UserDAO()
+
+    async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
+        user = await dao.create_user_model(
+            telegram_id=1,
+            name="admin",
+            position="admin",
+            about="admin",
+            status="admin",
+        )
+        access_token = create_access_token(
+            data={
+                "sub": str(user.id),
+                "scopes": [user.status],
+            },
+        )
+        ac.headers = Headers({"Authorization": f"Bearer {access_token}"})
         yield ac

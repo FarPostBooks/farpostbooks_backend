@@ -5,7 +5,7 @@ from farpostbooks_backend.db.models.user_model import UserModel
 
 
 class UserBookModel(models.Model):
-    """Модель для таблицы с книгами, которые были юзеров."""
+    """Модель для таблицы с книгами, которые были у юзеров."""
 
     id = fields.BigIntField(pk=True)
     user: fields.ForeignKeyRelation[UserModel] = fields.ForeignKeyField(

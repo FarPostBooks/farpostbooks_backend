@@ -54,6 +54,7 @@ class Settings(BaseSettings):
 
     # OAuth2 configuration
     secret_key: str = "secret_key"
+    token_type: str = "bearer"
     algorithm: str = "HS256"
     expire_minutes: int = 30
 
