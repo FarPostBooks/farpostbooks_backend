@@ -88,6 +88,8 @@ per-file-ignores =
   WPS211,
   ; Found nested import
   WPS433,
+  ; Found too many await expressions
+  WPS217,
 
   ; all init files
   __init__.py:

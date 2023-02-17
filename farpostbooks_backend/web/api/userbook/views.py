@@ -1,15 +1,12 @@
-from typing import List
+from typing import Optional
 
 from fastapi import APIRouter, Depends
 
 from farpostbooks_backend.db.dao.userbook_dao import UserBookDAO
-from farpostbooks_backend.db.models.book_model import BookModel
+from farpostbooks_backend.db.models.userbook_model import UserBookModel
 from farpostbooks_backend.services.access_token import get_current_user
-from farpostbooks_backend.web.api.schema import (
-    BookIntroduction,
-    ScrollDTO,
-    UserModelDTO,
-)
+from farpostbooks_backend.web.api.schema import ScrollDTO, UserModelDTO
+from farpostbooks_backend.web.api.userbook.schema import UserBookIntroduction, UserBooks
 
 router = APIRouter()
 
@@ -33,22 +30,48 @@ async def take_book(
     )
 
 
-@router.get("/{telegram_id}/books", response_model=List[BookIntroduction])
+@router.get("/{telegram_id}/books", response_model=UserBooks)
 async def get_user_books(
+    telegram_id: int,
     scroll_dto: ScrollDTO = Depends(),
-    current_user: UserModelDTO = Depends(get_current_user),
+    _: UserModelDTO = Depends(get_current_user),
     user_book_dao: UserBookDAO = Depends(),
-) -> List[BookModel]:
+) -> UserBooks:
     """
-    Получение информации об общем списке книг.
+    Получение списка книг пользователя.
 
+    :param telegram_id: Telegram ID пользователя.
     :param scroll_dto: DTO для работы со скроллингом.
-    :param current_user: Текущий пользователь по JWT токену.
+    :param _: Текущий пользователь по JWT токену.
     :param user_book_dao: DAO для модели книг.
     :return: Список книг.
     """
-    user_books = await user_book_dao.get_books(
-        current_user.id,
-        **scroll_dto.dict(exclude_none=True),
+    return UserBooks(
+        current=await user_book_dao.get_current_book(telegram_id),
+        books=await user_book_dao.get_books(
+            telegram_id=telegram_id,
+            **scroll_dto.dict(exclude_none=True),
+        ),
     )
-    return [user_book.book for user_book in user_books]
+
+
+@router.get("/{telegram_id}/books/{book_id}", response_model=UserBookIntroduction)
+async def get_user_book(
+    telegram_id: int,
+    book_id: int,
+    _: UserModelDTO = Depends(get_current_user),
+    user_book_dao: UserBookDAO = Depends(),
+) -> Optional[UserBookModel]:
+    """
+    Получение списка книг пользователя.
+
+    :param telegram_id: Telegram ID пользователя.
+    :param book_id: ISBN книги.
+    :param _: Текущий пользователь по JWT токену.
+    :param user_book_dao: DAO для модели книг.
+    :return: Список книг.
+    """
+    return await user_book_dao.get_book(
+        telegram_id=telegram_id,
+        book_id=book_id,
+    )

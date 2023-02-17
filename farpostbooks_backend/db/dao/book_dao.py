@@ -26,14 +26,16 @@ class BookDAO:
         :param publish: Дата публикации книги.
         :return: Модель новой книги.
         """
-        return await BookModel.create(
-            id=book_id,
-            name=name,
-            description=description,
-            image=image,
-            author=author,
-            publish=publish,
-        )
+        return (
+            await BookModel.get_or_create(
+                id=book_id,
+                name=name,
+                description=description,
+                image=image,
+                author=author,
+                publish=publish,
+            )
+        )[0]
 
     @staticmethod
     async def delete_book_model(
@@ -58,7 +60,7 @@ class BookDAO:
         """
         return await BookModel.get_or_none(
             id=book_id,
-        )
+        ).prefetch_related("user_books")
 
     @staticmethod
     async def get_books(

@@ -1,16 +1,17 @@
-from typing import List, Optional, Union
+from typing import List, Union
 
 from fastapi import APIRouter, Depends, HTTPException, Security
 from starlette import status
+from tortoise.contrib.pydantic import PydanticModel, pydantic_model_creator
 
 from farpostbooks_backend.db.dao.book_dao import BookDAO
 from farpostbooks_backend.db.models.book_model import BookModel
 from farpostbooks_backend.db.models.user_model import UserModel
 from farpostbooks_backend.services.access_token import get_current_user
 from farpostbooks_backend.services.search_book import search_google_books
-from farpostbooks_backend.web.api.book.schema import BookModelDTO
 from farpostbooks_backend.web.api.schema import (
     BookIntroduction,
+    BookModelDTO,
     ScrollDTO,
     UserModelDTO,
 )
@@ -23,7 +24,7 @@ async def create_book(
     book_id: int,
     _: UserModel = Security(get_current_user, scopes=["admin"]),
     book_dao: BookDAO = Depends(),
-) -> Optional[BookModel]:
+) -> PydanticModel:
     """
     Добавляем новую книгу к уже существующим по её ISBN.
 
@@ -42,7 +43,8 @@ async def create_book(
 
     json_book = book.dict(exclude_none=True)
     json_book["book_id"] = json_book.pop("id")
-    return await book_dao.create_book_model(**json_book)
+    new_book = await book_dao.create_book_model(**json_book)
+    return await pydantic_model_creator(BookModel).from_tortoise_orm(new_book)
 
 
 @router.get("/{book_id}", response_model=BookModelDTO)
@@ -50,7 +52,7 @@ async def search_book(
     book_id: int,
     _: UserModelDTO = Depends(get_current_user),
     book_dao: BookDAO = Depends(),
-) -> Union[BookModel, BookModelDTO]:
+) -> Union[BookModelDTO, PydanticModel]:
     """
     Получение информации о книге по ISBN.
 
@@ -62,7 +64,7 @@ async def search_book(
     """
     book = await book_dao.search_book(book_id=book_id)
     if book is not None:
-        return book
+        return await pydantic_model_creator(BookModel).from_tortoise_orm(book)
 
     new_book = await search_google_books(book_id)
     if new_book is None:

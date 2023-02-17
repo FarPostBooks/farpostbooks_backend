@@ -6,7 +6,6 @@ from starlette import status
 
 from farpostbooks_backend.db.dao.book_dao import BookDAO
 from farpostbooks_backend.db.dao.userbook_dao import UserBookDAO
-from farpostbooks_backend.db.models.book_model import BookModel
 
 
 @pytest.mark.anyio
@@ -18,37 +17,37 @@ async def test_get_user_books(
     """Тест эндпоинта для скроллинга странички с книгами пользователя."""
     book_dao = BookDAO()
     dao = UserBookDAO()
-
-    isbn = int(fake.isbn13().replace("-", ""))
-    book = await book_dao.create_book_model(
-        book_id=isbn,
-        name=fake.sentence(nb_words=5),
-        description=fake.sentence(nb_words=5),
-        image=fake.image_url(),
-        author=fake.name(),
-        publish=fake.year(),
-    )
     url = fastapi_app.url_path_for("get_user_books", telegram_id=2)
 
+    books = []
+    for _ in range(2):
+        isbn = int(fake.isbn13().replace("-", ""))
+        books.append(
+            await book_dao.create_book_model(
+                book_id=isbn,
+                name=fake.sentence(nb_words=5),
+                description=fake.sentence(nb_words=5),
+                image=fake.image_url(),
+                author=fake.name(),
+                publish=fake.year(),
+            ),
+        )
+
     response = await user_client.get(url)
+    user_books = response.json()
     assert response.status_code == status.HTTP_200_OK
-    assert not response.json()
+    assert (not user_books["books"]) and (user_books["current"] is None)
 
-    await dao.take_book(
-        telegram_id=2,
-        book_id=isbn,
-    )
-    response = await user_client.get(
-        url,
-        params={
-            "limit": 1,
-            "offset": 0,
-        },
-    )
-    assert response.json()[0]["id"] == book.id
+    await dao.take_book(telegram_id=2, book_id=books[0].id)
+    await dao.return_book(telegram_id=2, book_id=books[0].id)
+    await dao.take_book(telegram_id=2, book_id=books[1].id)
 
     response = await user_client.get(url)
-    assert response.json()[0]["id"] == book.id
+    user_books = response.json()
+    user_book_id = user_books["books"][0]["book"]["id"]
+
+    assert user_books["current"]["book"]["id"] == books[1].id
+    assert user_book_id == books[0].id
 
 
 @pytest.mark.anyio
@@ -76,8 +75,9 @@ async def test_take_book(
     response = await user_client.post(url)
     assert response.status_code == status.HTTP_200_OK
 
-    user_book: BookModel = (await dao.get_books(telegram_id=2))[0].book
-    assert user_book.id == book.id
+    user_book = await dao.get_current_book(telegram_id=2)
+    assert user_book is not None
+    assert user_book.book.id == book.id
 
     response = await user_client.post(url)
     assert response.status_code == status.HTTP_400_BAD_REQUEST

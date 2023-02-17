@@ -86,6 +86,21 @@ class UserBookDAO:
         )
 
     @staticmethod
+    async def get_current_book(
+        telegram_id: int,
+    ) -> Optional[UserBookModel]:
+        """
+        Получение текущей читаемой книги, если она существует.
+
+        :param telegram_id: Telegram ID пользователя.
+        :return: Текущая книга, если существует.
+        """
+        return await UserBookModel.get_or_none(
+            user_id=telegram_id,
+            back_timestamp=None,
+        ).prefetch_related("book")
+
+    @staticmethod
     async def get_books(
         telegram_id: int,
         limit: int = 10,
@@ -102,9 +117,27 @@ class UserBookDAO:
         return (
             await UserBookModel.filter(
                 user_id=telegram_id,
+                back_timestamp__isnull=False,
             )
             .prefetch_related("book")
             .order_by("id")
             .limit(limit)
             .offset(offset)
+        )
+
+    @staticmethod
+    async def get_book(
+        telegram_id: int,
+        book_id: int,
+    ) -> Optional[UserBookModel]:
+        """
+        Выгрузка одной книги.
+
+        :param telegram_id: Telegram ID пользователя.
+        :param book_id: ISBN выбранной книги.
+        :return: Модель взятие книги.
+        """
+        return await UserBookModel.get_or_none(
+            telegram_id=telegram_id,
+            book_id=book_id,
         )

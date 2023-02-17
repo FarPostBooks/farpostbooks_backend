@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -25,6 +25,18 @@ class UserModelUpdateDTO(BaseModel):
     about: Optional[str] = Field(None)
 
 
+class UserBookModel(BaseModel):
+    """DTO для списка книг пользователя."""
+
+    user: UserModelDTO
+    get_timestamp: datetime
+    back_timestamp: Optional[datetime]
+    rating: Optional[int]
+
+    class Config:
+        orm_mode = True
+
+
 class BookModelDTO(BaseModel):
     """DTO для модели книг."""
 
@@ -35,6 +47,7 @@ class BookModelDTO(BaseModel):
     author: str
     publish: str
     added_timestamp: Optional[datetime]
+    user_books: Optional[List[UserBookModel]] = None
 
     class Config:
         orm_mode = True

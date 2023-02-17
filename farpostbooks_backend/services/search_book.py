@@ -4,7 +4,7 @@ import aiofiles
 import httpx
 
 from farpostbooks_backend.settings import settings
-from farpostbooks_backend.web.api.book.schema import BookModelDTO
+from farpostbooks_backend.web.api.schema import BookModelDTO
 
 
 async def save_thumbnail(

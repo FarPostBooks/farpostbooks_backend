@@ -8,15 +8,15 @@ api_router.include_router(
 )
 
 api_router.include_router(
-    user.router,
-    prefix="/users",
-    tags=["Пользователи"],
-)
-
-api_router.include_router(
     userbook.router,
     prefix="/users",
     tags=["Книги пользователей"],
+)
+
+api_router.include_router(
+    user.router,
+    prefix="/users",
+    tags=["Пользователи"],
 )
 
 api_router.include_router(
