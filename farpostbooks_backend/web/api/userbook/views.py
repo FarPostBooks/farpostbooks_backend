@@ -8,10 +8,10 @@ from farpostbooks_backend.db.models.book_model import BookModel
 from farpostbooks_backend.services.access_token import get_current_user
 from farpostbooks_backend.web.api.schema import (
     BookIntroduction,
-    RatingDTO,
     ScrollDTO,
     UserModelDTO,
 )
+from farpostbooks_backend.web.api.userbook.schema import RatingDTO
 
 router = APIRouter()
 
@@ -59,12 +59,12 @@ async def get_user_books(
 @router.put("/me/books/{book_id}")
 async def return_book(
     book_id: int,
-    rating_dto: RatingDTO = Depends(),
+    rating_dto: RatingDTO,
     current_user: UserModelDTO = Depends(get_current_user),
     user_book_dao: UserBookDAO = Depends(),
 ) -> None:
     """
-    Отдача книги обратно на полку.
+    Возврат книги обратно на полку.
 
     :param book_id: ISBN книги.
     :param rating_dto: DTO рейтинга книги.

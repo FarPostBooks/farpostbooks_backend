@@ -89,7 +89,7 @@ async def test_take_book(
 
 
 @pytest.mark.anyio
-async def test_drop_book(
+async def test_return_book(
     fastapi_app: FastAPI,
     user_client: AsyncClient,
     admin_client: AsyncClient,
@@ -126,5 +126,10 @@ async def test_drop_book(
 
     assert response.status_code == status.HTTP_200_OK
 
-    response = await user_client.put(url)
+    response = await user_client.put(
+        url,
+        json={
+            "rating": rating,
+        },
+    )
     assert response.status_code == status.HTTP_400_BAD_REQUEST

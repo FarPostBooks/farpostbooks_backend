@@ -61,7 +61,10 @@ class UserBookDAO:
         :param telegram_id: Telegram ID пользователя.
         :param book_id: ISBN выбранной книги.
         """
-        await UserBookModel.filter(user_id=telegram_id, book_id=book_id).update(
+        await UserBookModel.filter(
+            user_id=telegram_id,
+            book_id=book_id,
+        ).update(
             back_timestamp=datetime.utcnow(),
             rating=rating,
         )
@@ -105,4 +108,5 @@ class UserBookDAO:
         return await UserBookModel.get_or_none(
             user_id=telegram_id,
             book_id=book_id,
+            back_timestamp=None,
         )

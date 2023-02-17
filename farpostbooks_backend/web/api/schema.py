@@ -56,9 +56,3 @@ class ScrollDTO(BaseModel):
 
     limit: Optional[int]
     offset: Optional[int]
-
-
-class RatingDTO(BaseModel):
-    """DTO для рейтинга книги."""
-
-    rating: int

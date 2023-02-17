@@ -12,3 +12,9 @@ class UserBookModelDTO(BaseModel):
     get_timestamp: datetime
     back_timestamp: datetime
     rating: int
+
+
+class RatingDTO(BaseModel):
+    """DTO для рейтинга книги."""
+
+    rating: int
