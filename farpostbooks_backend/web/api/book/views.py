@@ -8,13 +8,12 @@ from farpostbooks_backend.db.models.book_model import BookModel
 from farpostbooks_backend.db.models.user_model import UserModel
 from farpostbooks_backend.services.access_token import get_current_user
 from farpostbooks_backend.services.search_book import search_google_books
-from farpostbooks_backend.web.api.book.schema import (
+from farpostbooks_backend.web.api.book.schema import BookModelDTO
+from farpostbooks_backend.web.api.schema import (
     BookIntroduction,
-    BookModelDTO,
-    CreateBookModelDTO,
     ScrollDTO,
+    UserModelDTO,
 )
-from farpostbooks_backend.web.api.schema import UserModelDTO
 
 router = APIRouter()
 
@@ -40,8 +39,10 @@ async def create_book(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Книга не найдена.",
         )
-    book_to_create = CreateBookModelDTO(**book.dict(exclude_none=True))
-    return await book_dao.create_book_model(**book_to_create.dict(exclude_none=True))
+
+    json_book = book.dict(exclude_none=True)
+    json_book["book_id"] = json_book.pop("id")
+    return await book_dao.create_book_model(**json_book)
 
 
 @router.get("/{book_id}", response_model=BookModelDTO)

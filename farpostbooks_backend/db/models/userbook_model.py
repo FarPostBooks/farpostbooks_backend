@@ -20,7 +20,7 @@ class UserBookModel(models.Model):
     )
     get_timestamp = fields.DatetimeField(auto_now_add=True)
     back_timestamp = fields.DatetimeField(null=True)
-    rating = fields.SmallIntField()
+    rating = fields.SmallIntField(null=True)
 
     def __str__(self) -> str:
         return str(self.id)
