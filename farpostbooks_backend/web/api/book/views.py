@@ -8,9 +8,9 @@ from farpostbooks_backend.db.models.book_model import BookModel
 from farpostbooks_backend.db.models.user_model import UserModel
 from farpostbooks_backend.services.access_token import get_current_user
 from farpostbooks_backend.services.search_book import search_google_books
-from farpostbooks_backend.web.api.book.schema import BookModelDTO
 from farpostbooks_backend.web.api.schema import (
     BookIntroduction,
+    BookModelDTO,
     ScrollDTO,
     UserModelDTO,
 )

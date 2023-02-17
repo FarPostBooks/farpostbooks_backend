@@ -3,7 +3,6 @@ from typing import List, Optional
 
 from fastapi import HTTPException
 from starlette import status
-from tortoise.queryset import Q
 
 from farpostbooks_backend.db.models.userbook_model import UserBookModel
 
@@ -53,35 +52,17 @@ class UserBookDAO:
     async def return_book(
         telegram_id: int,
         book_id: int,
+        rating: int,
     ) -> None:
         """
         Возвращение книги обратно на полку.
 
+        :param rating: Рейтинг книги.
         :param telegram_id: Telegram ID пользователя.
         :param book_id: ISBN выбранной книги.
         """
-        await UserBookModel.filter(
-            Q(user_id=telegram_id) & Q(book_id=book_id),
-        ).update(
+        await UserBookModel.filter(user_id=telegram_id, book_id=book_id).update(
             back_timestamp=datetime.utcnow(),
-        )
-
-    @staticmethod
-    async def set_rating(
-        telegram_id: int,
-        book_id: int,
-        rating: int,
-    ) -> None:
-        """
-        Выставление рейтинга после прочтения.
-
-        :param telegram_id: Telegram ID пользователя.
-        :param book_id: ISBN выбранной книги.
-        :param rating: Оценка книги.
-        """
-        await UserBookModel.filter(
-            Q(user_id=telegram_id) & Q(book_id=book_id),
-        ).update(
             rating=rating,
         )
 
@@ -107,4 +88,21 @@ class UserBookDAO:
             .order_by("id")
             .limit(limit)
             .offset(offset)
+        )
+
+    @staticmethod
+    async def get_book(
+        telegram_id: int,
+        book_id: int,
+    ) -> Optional[UserBookModel]:
+        """
+        Выгрузка одной книги.
+
+        :param telegram_id: Telegram ID пользователя.
+        :param book_id: ISBN выбранной книги.
+        :return: Модель взятие книги.
+        """
+        return await UserBookModel.get_or_none(
+            user_id=telegram_id,
+            book_id=book_id,
         )
