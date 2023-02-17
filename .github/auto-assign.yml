@@ -1,0 +1,13 @@
+addReviewers: true
+
+addAssignees: author
+
+reviewers:
+- KatantDev
+
+numberOfReviewers: 0
+
+assignees:
+- KatantDev
+
+numberOfAssignees: 0

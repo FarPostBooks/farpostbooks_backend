@@ -86,6 +86,10 @@ per-file-ignores =
   DAR101,
   ; Found too many arguments
   WPS211,
+  ; Found nested import
+  WPS433,
+  ; Found too many await expressions
+  WPS217,
 
   ; all init files
   __init__.py:
@@ -95,6 +99,16 @@ per-file-ignores =
   F403,
   ; Found wrong metadata variable
   WPS410,
+
+  ; all dao files
+  */dao/*.py:
+  ; ignore import Q
+  WPS347,
+  ; ignore high Jones Complexity
+  WPS221,
+  ; ignore too many arguments
+  WPS211,
+
 
 exclude =
   ./.cache,

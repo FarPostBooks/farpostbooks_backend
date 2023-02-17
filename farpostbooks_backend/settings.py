@@ -52,6 +52,19 @@ class Settings(BaseSettings):
     sentry_dsn: Optional[str] = None
     sentry_sample_rate: float = 1.0
 
+    # OAuth2 configuration
+    secret_key: str = "secret_key"
+    token_type: str = "bearer"
+    algorithm: str = "HS256"
+    expire_minutes: int = 30
+
+    # Telegram configuration
+    bot_token: str = "42:TOKEN"
+
+    # Google Books
+    google_books_url: str = "https://www.googleapis.com/books/v1/volumes"
+    google_api_key: Optional[str] = None
+
     @property
     def db_url(self) -> URL:
         """

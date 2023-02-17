@@ -5,7 +5,7 @@ from farpostbooks_backend.db.models.user_model import UserModel
 
 
 class UserBookModel(models.Model):
-    """Модель для таблицы с книгами, которые были юзеров."""
+    """Модель для таблицы с книгами, которые были у юзеров."""
 
     id = fields.BigIntField(pk=True)
     user: fields.ForeignKeyRelation[UserModel] = fields.ForeignKeyField(
@@ -19,8 +19,8 @@ class UserBookModel(models.Model):
         on_delete="CASCADE",
     )
     get_timestamp = fields.DatetimeField(auto_now_add=True)
-    back_timestamp = fields.DatetimeField()
-    rating = fields.SmallIntField()
+    back_timestamp = fields.DatetimeField(null=True)
+    rating = fields.SmallIntField(null=True)
 
     def __str__(self) -> str:
         return str(self.id)
