@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class TelegramUserDTO(BaseModel):
-    """DTO для модели данных из Telegram Login Widget'а."""
+    """Данные из Telegram Login Widget'а."""
 
     id: int
     first_name: Optional[str]

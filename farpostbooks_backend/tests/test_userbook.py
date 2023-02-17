@@ -16,7 +16,7 @@ async def test_get_user_books(
     user_client: AsyncClient,
     fake: Faker,
 ) -> None:
-    """Тест эндпоинта для скроллинга странички с книгами пользователя."""
+    """Тест эндпоинта со списком книг пользователя."""
     book_dao = BookDAO()
     dao = UserBookDAO()
     url = fastapi_app.url_path_for("get_user_books", telegram_id=2)
@@ -59,7 +59,7 @@ async def test_take_book(
     admin_client: AsyncClient,
     fake: Faker,
 ) -> None:
-    """Тест эндпоинта для взятие книги с полки пользователем."""
+    """Тест эндпоинта для взятия книги с полки пользователем."""
     book_dao = BookDAO()
     dao = UserBookDAO()
 
@@ -95,7 +95,7 @@ async def test_return_book(
     admin_client: AsyncClient,
     fake: Faker,
 ) -> None:
-    """Тест эндпоинта для отдачи книги обратно на полку пользователем."""
+    """Тест эндпоинта для возвращения книги пользователем."""
     book_dao = BookDAO()
     dao = UserBookDAO()
 

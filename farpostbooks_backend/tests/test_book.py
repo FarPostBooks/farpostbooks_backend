@@ -13,7 +13,7 @@ async def test_search_book(
     user_client: AsyncClient,
     fake: Faker,
 ) -> None:
-    """Тест эдпоинта и проверка существования книги и правильной работы БД."""
+    """Тест эндпоинта для поиска книги."""
     dao = BookDAO()
 
     isbn = int(fake.isbn13().replace("-", ""))
@@ -43,7 +43,7 @@ async def test_create_book(
     admin_client: AsyncClient,
     fake: Faker,
 ) -> None:
-    """Тест эндпоинта с добавлением данных о книги в БД."""
+    """Тест эндпоинта с добавлением данных о книге в БД."""
     dao = BookDAO()
 
     isbn = 9785911511036
@@ -65,7 +65,7 @@ async def test_get_books(
     user_client: AsyncClient,
     fake: Faker,
 ) -> None:
-    """Тест эндпоинта для скроллинга главной странички."""
+    """Тест эндпоинта с получением списка книг."""
     dao = BookDAO()
 
     isbn = int(fake.isbn13().replace("-", ""))

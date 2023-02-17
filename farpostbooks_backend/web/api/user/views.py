@@ -1,14 +1,17 @@
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
 from farpostbooks_backend.db.dao.user_dao import UserDAO
+from farpostbooks_backend.db.models.user_model import UserModel
 from farpostbooks_backend.services.access_token import (
     create_access_token,
     get_current_user,
 )
 from farpostbooks_backend.services.telegram_hash import HashCheck
 from farpostbooks_backend.settings import settings
-from farpostbooks_backend.web.api.schema import UserModelDTO
+from farpostbooks_backend.web.api.schema import UserModelDTO, UserModelUpdateDTO
 from farpostbooks_backend.web.api.user.schema import (
     AuthorizationToken,
     CreateUserDTO,
@@ -23,7 +26,7 @@ async def get_me(
     current_user: UserModelDTO = Depends(get_current_user),
 ) -> UserModelDTO:
     """
-    Получение данных о себе, используя сессию.
+    Информация о себе.
 
     :param current_user: Pydantic модель пользователя, полученная по JWT токену.
     :return: Модель с данными о пользователе.
@@ -37,7 +40,7 @@ async def auth_user(
     user_dao: UserDAO = Depends(),
 ) -> AuthorizationToken:
     """
-    Проверить валидность Telegram hash'а.
+    Получение токена, если пользователь зарегистрирован.
 
     :param telegram_data: Pydantic модель с данными о пользователе из Telegram.
     :param user_dao: DAO для модели пользователя.
@@ -112,3 +115,20 @@ async def create_user(
         access_token=access_token,
         token_type=settings.token_type,
     )  # noqa: WPS421, S106
+
+
+@router.put("/me", response_model=UserModelDTO)
+async def update_me(
+    new_user_data: UserModelUpdateDTO,
+    current_user: UserModelDTO = Depends(get_current_user),
+    user_dao: UserDAO = Depends(),
+) -> Optional[UserModel]:
+    """
+    Обновление информации о себе.
+
+    :param new_user_data: Pydantic модель с новыми данными о пользователе.
+    :param current_user: Текущий пользователь по JWT токену.
+    :param user_dao: DAO для модели пользователя.
+    :return: Модель пользователя с измененными данными.
+    """
+    return await user_dao.change_user_model(current_user.id, new_user_data)

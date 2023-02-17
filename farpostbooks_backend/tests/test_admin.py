@@ -67,12 +67,12 @@ async def test_scopes(
 
 
 @pytest.mark.anyio
-async def test_updating(
+async def test_update_user(
     fastapi_app: FastAPI,
     admin_client: AsyncClient,
     fake: Faker,
 ) -> None:
-    """Тест эндпоинта с обновлением данных в БД."""
+    """Тест эндпоинта для обновления данных пользователя в БД."""
     dao = UserDAO()
 
     telegram_id = secrets.randbelow(1000000000000)
@@ -95,8 +95,8 @@ async def test_updating(
     )
     updated_user = await dao.get_user(telegram_id)
 
+    assert response.status_code == status.HTTP_200_OK
     assert updated_user is not None
     assert updated_user.name == new_name
     assert updated_user.position == new_position
     assert updated_user.about == user.about
-    assert response.status_code == status.HTTP_200_OK

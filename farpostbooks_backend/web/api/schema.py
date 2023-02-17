@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 
 class UserModelDTO(BaseModel):
-    """DTO для модели пользователей."""
+    """Информация о пользователе."""
 
     id: int
     name: str
@@ -18,7 +18,7 @@ class UserModelDTO(BaseModel):
 
 
 class UserModelUpdateDTO(BaseModel):
-    """DTO для обновления данных существующего пользователя."""
+    """Обновление данных пользователя."""
 
     name: Optional[str] = Field(None)
     position: Optional[str] = Field(None)
@@ -26,7 +26,7 @@ class UserModelUpdateDTO(BaseModel):
 
 
 class UserBookModel(BaseModel):
-    """DTO для списка книг пользователя."""
+    """Информация о книге, взятой пользователем."""
 
     user: UserModelDTO
     get_timestamp: datetime
@@ -38,7 +38,7 @@ class UserBookModel(BaseModel):
 
 
 class BookModelDTO(BaseModel):
-    """DTO для модели книг."""
+    """Подробная информация о книге."""
 
     id: int
     name: str
@@ -54,7 +54,7 @@ class BookModelDTO(BaseModel):
 
 
 class BookIntroduction(BaseModel):
-    """DTO для отображения книги при скроллинге."""
+    """Отображение списка книг."""
 
     id: int
     name: str
@@ -65,7 +65,7 @@ class BookIntroduction(BaseModel):
 
 
 class ScrollDTO(BaseModel):
-    """DTO для скроллинга."""
+    """Параметры для получения списка книг."""
 
     limit: Optional[int]
     offset: Optional[int]

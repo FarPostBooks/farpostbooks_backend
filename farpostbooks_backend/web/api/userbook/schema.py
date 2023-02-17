@@ -6,17 +6,6 @@ from pydantic import BaseModel
 from farpostbooks_backend.web.api.schema import BookIntroduction
 
 
-class UserBookModelDTO(BaseModel):
-    """DTO для модели истории взятие книг."""
-
-    id: int
-    book: int
-    user: int
-    get_timestamp: datetime
-    back_timestamp: datetime
-    rating: int
-
-
 class UserBookIntroduction(BaseModel):
     """DTO для книги пользователя."""
 
@@ -30,13 +19,13 @@ class UserBookIntroduction(BaseModel):
 
 
 class UserBooks(BaseModel):
-    """DTO для спика книг пользователя."""
+    """Список книг у пользователя (текущая + прочитанные)."""
 
     current: Optional[UserBookIntroduction]
     books: List[UserBookIntroduction]
 
 
 class RatingDTO(BaseModel):
-    """DTO для рейтинга книги."""
+    """Выставление рейтинга книге."""
 
     rating: int

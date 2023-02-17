@@ -23,7 +23,7 @@ async def take_book(
     user_book_dao: UserBookDAO = Depends(),
 ) -> None:
     """
-    Взятие книги с полки.
+    Взятие книги по ISBN.
 
     :param book_id: ISBN книги.
     :param current_user: Текущий пользователь по JWT токену.
@@ -43,7 +43,9 @@ async def get_user_books(
     user_book_dao: UserBookDAO = Depends(),
 ) -> UserBooks:
     """
-    Получение списка книг пользователя.
+    Общий список книг + текущая книга пользователя по Telegram ID.
+
+    (ограничен по limit/offset).
 
     :param telegram_id: Telegram ID пользователя.
     :param scroll_dto: DTO для работы со скроллингом.
@@ -68,7 +70,7 @@ async def get_user_book(
     user_book_dao: UserBookDAO = Depends(),
 ) -> Optional[UserBookModel]:
     """
-    Получение списка книг пользователя.
+    Подробная информация о книге пользователя по Telegram ID и ISBN.
 
     :param telegram_id: Telegram ID пользователя.
     :param book_id: ISBN книги.
@@ -90,7 +92,7 @@ async def return_book(
     user_book_dao: UserBookDAO = Depends(),
 ) -> None:
     """
-    Возврат книги обратно на полку.
+    Обновление информации о книге при возвращении пользователем (timestamp, rating).
 
     :param book_id: ISBN книги.
     :param rating_dto: DTO рейтинга книги.

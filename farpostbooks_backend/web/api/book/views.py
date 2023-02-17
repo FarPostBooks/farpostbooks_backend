@@ -26,7 +26,7 @@ async def create_book(
     book_dao: BookDAO = Depends(),
 ) -> PydanticModel:
     """
-    Добавляем новую книгу к уже существующим по её ISBN.
+    Добавление новой книги по ISBN.
 
     :param book_id: ISBN книги.
     :param _: Текущий пользователь по JWT токену.
@@ -82,7 +82,7 @@ async def get_books(
     book_dao: BookDAO = Depends(),
 ) -> List[BookModel]:
     """
-    Получение информации об общем списке книг.
+    Общий список книг (ограничен по limit/offset).
 
     :param _: Текущий пользователь по JWT токену.
     :param scroll_dto: DTO для работы со скроллингом.

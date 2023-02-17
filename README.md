@@ -2,23 +2,24 @@
 REST API для корпоративной библиотеки FarPost, написанный с использованием FastAPI.
 
 ## API Endpoints:
-- [x] `GET /users/token` - Получение токена, если пользователь зарегистрирован
 - [x] `POST /users/{telegram_id}` - Создание нового пользователя
-----
+- [x] `GET /users/token` - Получение токена, если пользователь зарегистрирован
 - [x] `GET /users/me` - Информация о себе _(scope: user)_
-- [x] `GET /users/{telegram_id}` - Получение пользователя по telegram_id _(scope: user)_
-- [x] `PUT /users/{telegram_id}` - Обновление данных пользователя _(scope: admin)_
+- [x] `PUT /users/me` - Обновление информации о себе _(scope: user)_
+----
+- [x] `GET /users/{telegram_id}` - Информация о пользователе по его Telegram ID _(scope: user)_
+- [x] `PUT /users/{telegram_id}` - Обновление данных пользователя по Telegram ID _(scope: admin)_
 ---
+- [x] `POST /books/{book_id}` - Добавление новой книги по ISBN _(scope: admin)_
 - [x] `GET /books` - Общий список книг (ограничен по limit/offset) _(scope: user)_
 - [x] `GET /books/{book_id}` - Получение информации о книге по ISBN _(scope: user)_
-- [x] `POST /books/{book_id}` - Добавление новой книги по ISBN _(scope: admin)_
 ---
-- [x] `GET /users/{telegram_id}/books` - Список всех книг юзера (ограниченный) + текущая _(scope: user)_
-- [x] `POST /users/me/books/{book_id}` - Взять книгу _(scope: user)_
-- [x] `GET /users/{telegram_id}/books/{book_id}` - Получение подробной информации о книге пользователя по ISBN _(scope: user)_
-- [x] `PUT /users/me/books/{book_id}` - Обновление информации о книге при возвращении пользователя (timestamp, rating)
+- [x] `GET /users/{telegram_id}/books` - Общий список книг + текущая книга пользователя по Telegram ID (ограничен по limit/offset) _(scope: user)_
+- [x] `POST /users/me/books/{book_id}` - Взятие книги по ISBN _(scope: user)_
+- [x] `GET /users/{telegram_id}/books/{book_id}` - Подробная информация о книге пользователя по Telegram ID и ISBN _(scope: user)_
+- [x] `PUT /users/me/books/{book_id}` - Обновление информации о книге при возвращении пользователем (timestamp, rating) _(scope: user)_
 
-Список будет обновляться...
+Список будет дополняться...
 
 ## Poetry
 

@@ -15,7 +15,7 @@ from farpostbooks_backend.settings import settings
 
 
 @pytest.mark.anyio
-async def test_token(
+async def test_auth_user(
     fastapi_app: FastAPI,
     client: AsyncClient,
     fake: Faker,
@@ -62,7 +62,7 @@ async def test_create_user(
     client: AsyncClient,
     fake: Faker,
 ) -> None:
-    """Тест эндпоинта создания нового пользователя."""
+    """Тест эндпоинта для создания нового пользователя."""
     dao = UserDAO()
     url = fastapi_app.url_path_for("create_user")
 
@@ -123,3 +123,32 @@ async def test_get_me(
     json_response = response.json()
     assert response.status_code == status.HTTP_200_OK
     assert json_response["id"] == 2
+
+
+@pytest.mark.anyio
+async def test_update_me(
+    fastapi_app: FastAPI,
+    user_client: AsyncClient,
+    fake: Faker,
+) -> None:
+    """Тест эндпоинта для обновления данных о себе."""
+    dao = UserDAO()
+
+    new_name = f"{fake.first_name()} {fake.last_name()}"
+    new_position = fake.job()
+
+    url = fastapi_app.url_path_for("update_me")
+    response = await user_client.put(
+        url,
+        json={
+            "name": new_name,
+            "position": new_position,
+        },
+    )
+    updated_user = await dao.get_user(telegram_id=2)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert updated_user is not None
+    assert updated_user.name == new_name
+    assert updated_user.position == new_position
+    assert updated_user.about == "user"

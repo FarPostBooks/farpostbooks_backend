@@ -18,7 +18,7 @@ async def get_user(
     user_dao: UserDAO = Depends(),
 ) -> UserModel:
     """
-    Проверить существует ли пользователь по его Telegram ID.
+    Информация о пользователе по его Telegram ID.
 
     :param telegram_id: Telegram ID пользователя.
     :param _: Текущий пользователь по JWT токену.
@@ -43,7 +43,7 @@ async def update_user(
     user_dao: UserDAO = Depends(),
 ) -> Optional[UserModel]:
     """
-    Обновить данные пользователя по его Telegram ID.
+    Обновление данных пользователя по Telegram ID.
 
     :param telegram_id: Telegram ID пользователя.
     :param new_user_data: Pydantic модель с новыми данными о пользователе.
