@@ -34,3 +34,9 @@ class UserBooks(BaseModel):
 
     current: Optional[UserBookIntroduction]
     books: List[UserBookIntroduction]
+
+
+class RatingDTO(BaseModel):
+    """DTO для рейтинга книги."""
+
+    rating: int

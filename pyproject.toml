@@ -26,6 +26,7 @@ sentry-sdk = "^1.14.0"
 loguru = "^0.6.0"
 jose = "^1.0.0"
 aiofiles = "^23.1.0"
+types-aiofiles = "^22.1.0.8"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.2.1"

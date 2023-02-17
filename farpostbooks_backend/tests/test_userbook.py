@@ -1,3 +1,5 @@
+import secrets
+
 import pytest
 from faker import Faker
 from fastapi import FastAPI
@@ -39,7 +41,7 @@ async def test_get_user_books(
     assert (not user_books["books"]) and (user_books["current"] is None)
 
     await dao.take_book(telegram_id=2, book_id=books[0].id)
-    await dao.return_book(telegram_id=2, book_id=books[0].id)
+    await dao.return_book(telegram_id=2, book_id=books[0].id, rating=5)
     await dao.take_book(telegram_id=2, book_id=books[1].id)
 
     response = await user_client.get(url)
@@ -57,7 +59,7 @@ async def test_take_book(
     admin_client: AsyncClient,
     fake: Faker,
 ) -> None:
-    """Тест эндпоинта для скроллинга странички с книгами пользователя."""
+    """Тест эндпоинта для взятие книги с полки пользователем."""
     book_dao = BookDAO()
     dao = UserBookDAO()
 
@@ -84,3 +86,50 @@ async def test_take_book(
 
     response = await admin_client.post(url)
     assert response.status_code == status.HTTP_409_CONFLICT
+
+
+@pytest.mark.anyio
+async def test_return_book(
+    fastapi_app: FastAPI,
+    user_client: AsyncClient,
+    admin_client: AsyncClient,
+    fake: Faker,
+) -> None:
+    """Тест эндпоинта для отдачи книги обратно на полку пользователем."""
+    book_dao = BookDAO()
+    dao = UserBookDAO()
+
+    isbn = int(fake.isbn13().replace("-", ""))
+    rating = secrets.randbelow(5)
+    await book_dao.create_book_model(
+        book_id=isbn,
+        name=fake.sentence(nb_words=5),
+        description=fake.sentence(nb_words=5),
+        image=fake.image_url(),
+        author=fake.name(),
+        publish=fake.year(),
+    )
+
+    await dao.take_book(
+        telegram_id=2,
+        book_id=isbn,
+    )
+
+    url = fastapi_app.url_path_for("return_book", book_id=isbn)
+
+    response = await user_client.put(
+        url,
+        json={
+            "rating": rating,
+        },
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+
+    response = await user_client.put(
+        url,
+        json={
+            "rating": rating,
+        },
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
