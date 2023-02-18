@@ -10,7 +10,7 @@ TEMP_DIR = Path(gettempdir())
 
 
 class LogLevel(str, enum.Enum):  # noqa: WPS600
-    """Possible log levels."""
+    """Возможные уровни логирования."""
 
     NOTSET = "NOTSET"
     DEBUG = "DEBUG"
@@ -22,20 +22,19 @@ class LogLevel(str, enum.Enum):  # noqa: WPS600
 
 class Settings(BaseSettings):
     """
-    Application settings.
+    Настройки приложения.
 
-    These parameters can be configured
-    with environment variables.
+    Доступ к настройкам можно получить из виртуального окружения.
     """
 
     host: str = "127.0.0.1"
     port: int = 8000
-    # quantity of workers for uvicorn
+    # Количество воркеров для uvicorn
     workers_count: int = 1
-    # Enable uvicorn reloading
+    # Включить перезагрузку uvicorn
     reload: bool = False
 
-    # Current environment
+    # Текущее окружение
     environment: str = "dev"
 
     log_level: LogLevel = LogLevel.INFO
@@ -48,29 +47,27 @@ class Settings(BaseSettings):
     db_base: str = "farpostbooks_backend"
     db_echo: bool = False
 
-    # Sentry's configuration.
-    sentry_dsn: Optional[str] = None
-    sentry_sample_rate: float = 1.0
-
-    # OAuth2 configuration
+    # Конфигурация OAuth2
     secret_key: str = "secret_key"
     token_type: str = "bearer"
     algorithm: str = "HS256"
     expire_minutes: int = 30
 
-    # Telegram configuration
+    # Конфигурация для Telegram
     bot_token: str = "42:TOKEN"
 
-    # Google Books
+    # Конфигурация для Google Books
     google_books_url: str = "https://www.googleapis.com/books/v1/volumes"
     google_api_key: Optional[str] = None
+
+    OTLP_GRPC_ENDPOINT: str = "http://tempo:4317"
 
     @property
     def db_url(self) -> URL:
         """
-        Assemble database URL from settings.
+        Сборка ссылки на основе настроек для доступа к Базе Данных.
 
-        :return: database URL.
+        :return: URL базы данных.
         """
         return URL.build(
             scheme="postgres",

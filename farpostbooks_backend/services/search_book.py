@@ -7,6 +7,27 @@ from farpostbooks_backend.settings import settings
 from farpostbooks_backend.web.api.schema import BookModelDTO
 
 
+async def get_books(client: httpx.AsyncClient, isbn: int) -> Dict[Any, Any]:
+    """
+    Получить информацию о книге по ISBN.
+
+    :param client: Клиент для запросов к серверу.
+    :param isbn: ISBN книги.
+    :return: Информация о книге.
+    """
+    try:
+        response = await client.get(
+            settings.google_books_url,
+            params={
+                "q": f"isbn:{isbn}",
+                "key": settings.google_api_key,
+            },
+        )
+        return response.json()
+    except httpx.ConnectTimeout:
+        return await get_books(client, isbn)
+
+
 async def save_thumbnail(
     client: httpx.AsyncClient,
     isbn: int,
@@ -41,14 +62,7 @@ async def search_google_books(isbn: int) -> Optional[BookModelDTO]:
     :return: Pydantic модель с данными о книге, если она найдена.
     """
     async with httpx.AsyncClient() as client:
-        response = await client.get(
-            settings.google_books_url,
-            params={
-                "q": f"isbn:{isbn}",
-                "key": settings.google_api_key,
-            },
-        )
-        books = response.json()
+        books = await get_books(client, isbn)
         if not books["totalItems"]:
             return None
 

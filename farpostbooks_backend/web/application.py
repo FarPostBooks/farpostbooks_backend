@@ -1,15 +1,15 @@
-import logging
 from importlib import metadata
 
-import sentry_sdk
 from fastapi import FastAPI
 from fastapi.responses import UJSONResponse
-from sentry_sdk.integrations.fastapi import FastApiIntegration
-from sentry_sdk.integrations.logging import LoggingIntegration
 from tortoise.contrib.fastapi import register_tortoise
 
 from farpostbooks_backend.db.config import TORTOISE_CONFIG
-from farpostbooks_backend.logging import configure_logging
+from farpostbooks_backend.services.utils import (
+    PrometheusMiddleware,
+    metrics,
+    setting_otlp,
+)
 from farpostbooks_backend.settings import settings
 from farpostbooks_backend.web.api.router import api_router
 from farpostbooks_backend.web.lifetime import (
@@ -20,29 +20,10 @@ from farpostbooks_backend.web.lifetime import (
 
 def get_app() -> FastAPI:
     """
-    Get FastAPI application.
+    Конструктор для FastAPI приложения.
 
-    This is the main constructor of an application.
-
-    :return: application.
+    :return: Приложение fastapi.
     """
-    configure_logging()
-    if settings.sentry_dsn:
-        # Enables sentry integration.
-        sentry_sdk.init(
-            dsn=settings.sentry_dsn,
-            traces_sample_rate=settings.sentry_sample_rate,
-            environment=settings.environment,
-            integrations=[
-                FastApiIntegration(transaction_style="endpoint"),
-                LoggingIntegration(
-                    level=logging.getLevelName(
-                        settings.log_level.value,
-                    ),
-                    event_level=logging.ERROR,
-                ),
-            ],
-        )
     app = FastAPI(
         title="farpostbooks_backend",
         version=metadata.version("farpostbooks_backend"),
@@ -52,13 +33,17 @@ def get_app() -> FastAPI:
         default_response_class=UJSONResponse,
     )
 
-    # Adds startup and shutdown events.
+    # Ивенты при запуске и выключении.
     register_startup_event(app)
     register_shutdown_event(app)
 
-    # Main router for the API.
+    # Конфигурация для роутеров.
+    app.add_middleware(PrometheusMiddleware, app_name=settings.environment)
+    setting_otlp(app, settings.environment, settings.OTLP_GRPC_ENDPOINT)
     app.include_router(router=api_router, prefix="/api")
-    # Configures tortoise orm.
+    app.add_route("/metrics", metrics)
+
+    # Конфигурация для Tortoise ORM.
     register_tortoise(
         app,
         config=TORTOISE_CONFIG,
