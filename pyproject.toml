@@ -27,6 +27,12 @@ loguru = "^0.6.0"
 jose = "^1.0.0"
 aiofiles = "^23.1.0"
 types-aiofiles = "^22.1.0.8"
+prometheus-client = "^0.16.0"
+opentelemetry-api = "^1.15.0"
+opentelemetry-sdk = "^1.15.0"
+opentelemetry-exporter-otlp = "^1.15.0"
+opentelemetry-instrumentation-logging = {version = "^0.36b0", allow-prereleases = true}
+opentelemetry-instrumentation-fastapi = {version = "^0.36b0", allow-prereleases = true}
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.2.1"
@@ -71,7 +77,6 @@ filterwarnings = [
 ]
 env = [
     "FARPOSTBOOKS_BACKEND_DB_BASE=farpostbooks_backend_test",
-    "FARPOSTBOOKS_BACKEND_SENTRY_DSN=",
 ]
 [tool.aerich]
 tortoise_orm = "farpostbooks_backend.db.config.TORTOISE_CONFIG"

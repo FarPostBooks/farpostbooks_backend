@@ -4,6 +4,7 @@ from typing import List, Optional
 from fastapi import HTTPException
 from starlette import status
 
+from farpostbooks_backend.db.models.book_model import BookModel
 from farpostbooks_backend.db.models.userbook_model import UserBookModel
 
 
@@ -23,6 +24,13 @@ class UserBookDAO:
         :raises HTTPException: Ошибка, если не удалось взять книгу.
         :return: Модель взятие книги.
         """
+        is_exist = await BookModel.get_or_none(id=book_id)
+        if is_exist is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Пользователь не может взять несуществующую книгу.",
+            )
+
         user_already_have_book = await UserBookModel.filter(
             user_id=telegram_id,
             back_timestamp=None,

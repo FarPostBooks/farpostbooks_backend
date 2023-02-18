@@ -7,13 +7,13 @@ def register_startup_event(
     app: FastAPI,
 ) -> Callable[[], Awaitable[None]]:  # pragma: no cover
     """
-    Actions to run on application startup.
+    Действия при запуске приложения.
 
-    This function uses fastAPI app to store data
-    inthe state, such as db_engine.
+    Эта функция использует приложение FastAPI для хранения данных
+    в состоянии, например db_engine.
 
-    :param app: the fastAPI application.
-    :return: function that actually performs actions.
+    :param app: Приложение FastAPI.
+    :return: Функция, выполняющая действия.
     """
 
     @app.on_event("startup")
@@ -27,10 +27,10 @@ def register_shutdown_event(
     app: FastAPI,
 ) -> Callable[[], Awaitable[None]]:  # pragma: no cover
     """
-    Actions to run on application's shutdown.
+    Действия при остановке приложения.
 
-    :param app: fastAPI application.
-    :return: function that actually performs actions.
+    :param app: Приложение FastAPI.
+    :return: Функция, выполняющая действия.
     """
 
     @app.on_event("shutdown")

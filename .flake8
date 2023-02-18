@@ -109,6 +109,15 @@ per-file-ignores =
   ; ignore too many arguments
   WPS211,
 
+  ; utils.py for metrics
+  */services/utils.py:
+  ; Found too many local variables
+  WPS210,
+  ; Found except `BaseException`
+  WPS424,
+  ; Missing docstring in public method
+  D102,
+
 
 exclude =
   ./.cache,

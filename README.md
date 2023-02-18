@@ -37,6 +37,11 @@ poetry run python -m farpostbooks_backend
 
 ## Docker
 
+Перед запуском установить плагин для Docker - Loki:
+```bash
+docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+```
+
 Запуск проекта, используя Docker:
 ```bash
 docker-compose -f deploy/docker-compose.yml --project-directory . up --build

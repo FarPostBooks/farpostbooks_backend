@@ -19,9 +19,9 @@ nest_asyncio.apply()
 @pytest.fixture(scope="session")
 def anyio_backend() -> str:
     """
-    Backend for anyio pytest plugin.
+    Бэкенд для anyio pytest плагина.
 
-    :return: backend name.
+    :return: Название бэкенда.
     """
     return "asyncio"
 
