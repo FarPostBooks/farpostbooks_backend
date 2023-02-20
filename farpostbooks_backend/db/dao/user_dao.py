@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from farpostbooks_backend.db.models.user_model import UserModel
 from farpostbooks_backend.web.api.schema import UserModelUpdateDTO
@@ -46,6 +46,15 @@ class UserDAO:
         return await UserModel.get_or_none(
             id=telegram_id,
         )
+
+    @staticmethod
+    async def get_users() -> List[UserModel]:
+        """
+        Получение списка всех пользователей.
+
+        :return: Список пользователей.
+        """
+        return await UserModel.all()
 
     async def change_user_model(
         self,

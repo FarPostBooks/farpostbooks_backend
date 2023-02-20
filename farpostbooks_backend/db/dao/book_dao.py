@@ -1,4 +1,7 @@
+from datetime import datetime, timedelta
 from typing import List, Optional
+
+from tortoise.expressions import Q
 
 from farpostbooks_backend.db.models.book_model import BookModel
 
@@ -75,3 +78,15 @@ class BookDAO:
         :return: Список из книг со сдвигом.
         """
         return await BookModel.all().limit(limit).offset(offset)
+
+    @staticmethod
+    async def get_new_books() -> List[BookModel]:
+        """
+        Получить список новых книг, которые были добавлены в течение недели.
+
+        :return: Список книг.
+        """
+        date = datetime.utcnow() - timedelta(weeks=1)
+        return await BookModel.filter(
+            Q(added_timestamp__gt=date),
+        ).all()
