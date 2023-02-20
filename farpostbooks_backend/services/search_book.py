@@ -2,6 +2,7 @@ from typing import Any, Dict, Optional
 
 import aiofiles
 import httpx
+from opentelemetry.propagate import inject
 
 from farpostbooks_backend.settings import settings
 from farpostbooks_backend.web.api.schema import BookModelDTO
@@ -61,18 +62,26 @@ async def search_google_books(isbn: int) -> Optional[BookModelDTO]:
     :param isbn: ISBN искомой книги.
     :return: Pydantic модель с данными о книге, если она найдена.
     """
-    async with httpx.AsyncClient() as client:
+    headers: Dict[str, Any] = {}
+    inject(headers)
+    async with httpx.AsyncClient(headers=headers) as client:
         books = await get_books(client, isbn)
         if not books["totalItems"]:
             return None
 
         book = books["items"][0]["volumeInfo"]
+        if "publishedDate" not in book:
+            publish = "Неизвестно"
+        else:
+            publish = book["publishedDate"]
+
         thumbnail = await save_thumbnail(client, isbn, book)
+
     return BookModelDTO(
         id=isbn,
         name=book["title"],
         description=book["description"],
         image=thumbnail,
         author=", ".join(book["authors"]),
-        publish=book["publishedDate"],
+        publish=publish,
     )

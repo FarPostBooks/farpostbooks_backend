@@ -1,8 +1,5 @@
-import logging
-
 import uvicorn
 
-from farpostbooks_backend.services.utils import EndpointFilter
 from farpostbooks_backend.settings import settings
 
 
@@ -15,7 +12,6 @@ def main() -> None:
         "%(lineno)d] [trace_id=%(otelTraceID)s span_id=%(otelSpanID)s "  # noqa: WPS323
         "resource.service.name=%(otelServiceName)s] - %(message)s"  # noqa: WPS323
     )
-    logging.getLogger("uvicorn.access").addFilter(EndpointFilter())
 
     # Запуск uvicorn
     uvicorn.run(

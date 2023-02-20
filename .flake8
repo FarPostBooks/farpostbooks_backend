@@ -1,4 +1,5 @@
 [flake8]
+max-local-variables = 7
 max-complexity = 6
 inline-quotes = double
 max-line-length = 88

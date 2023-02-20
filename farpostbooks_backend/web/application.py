@@ -1,3 +1,4 @@
+import logging
 from importlib import metadata
 
 from fastapi import FastAPI
@@ -6,6 +7,7 @@ from tortoise.contrib.fastapi import register_tortoise
 
 from farpostbooks_backend.db.config import TORTOISE_CONFIG
 from farpostbooks_backend.services.utils import (
+    EndpointFilter,
     PrometheusMiddleware,
     metrics,
     setting_otlp,
@@ -42,6 +44,7 @@ def get_app() -> FastAPI:
     setting_otlp(app, settings.environment, settings.OTLP_GRPC_ENDPOINT)
     app.include_router(router=api_router, prefix="/api")
     app.add_route("/metrics", metrics)
+    logging.getLogger("uvicorn.access").addFilter(EndpointFilter())
 
     # Конфигурация для Tortoise ORM.
     register_tortoise(

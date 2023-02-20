@@ -55,12 +55,18 @@ class Settings(BaseSettings):
 
     # Конфигурация для Telegram
     bot_token: str = "42:TOKEN"
+    broadcast_sleep: float = 0.05
 
     # Конфигурация для Google Books
     google_books_url: str = "https://www.googleapis.com/books/v1/volumes"
     google_api_key: Optional[str] = None
 
+    # Метрики
     OTLP_GRPC_ENDPOINT: str = "http://tempo:4317"
+
+    # Настройки Redis'а.
+    redis_host: str = "redis"
+    redis_port: int = 6379
 
     @property
     def db_url(self) -> URL:
