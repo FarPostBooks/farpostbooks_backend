@@ -17,6 +17,10 @@ services:
       context: .
       dockerfile: ./deploy/Dockerfile
     image: farpostbooks_backend:${FARPOSTBOOKS_BACKEND_VERSION:-latest}
+    volumes:
+    - images:/app/src/images
+    networks:
+    - backnet
     restart: always
     env_file:
     - .env
@@ -36,6 +40,8 @@ services:
 
   db:
     image: postgres:13.8-bullseye
+    networks:
+    - backnet
     hostname: farpostbooks_backend-db
     environment:
       POSTGRES_PASSWORD: "farpostbooks_backend"
@@ -52,6 +58,8 @@ services:
 
   redis:
     image: redis:latest
+    networks:
+    - backnet
     volumes:
     - ./redis_data:/data
 
@@ -59,6 +67,8 @@ services:
     build:
       context: .
       dockerfile: ./deploy/Dockerfile
+    networks:
+    - backnet
     env_file:
     - .env
     depends_on:
@@ -70,6 +80,8 @@ services:
 
   migrator:
     image: farpostbooks_backend:${FARPOSTBOOKS_BACKEND_VERSION:-latest}
+    networks:
+    - backnet
     restart: "no"
     command: aerich upgrade
     environment:
@@ -84,12 +96,16 @@ services:
 
   loki:
     image: grafana/loki:2.6.1
+    networks:
+    - backnet
     command: -config.file=/etc/loki/local-config.yaml
     ports:
     - "3100:3100"
 
   prometheus:
     image: prom/prometheus:v2.39.1
+    networks:
+    - backnet
     ports:
     - "9090:9090"
     volumes:
@@ -103,6 +119,8 @@ services:
 
   tempo:
     image: grafana/tempo:1.5.0
+    networks:
+    - backnet
     command: ["--target=all", "--storage.trace.backend=local", "--storage.trace.local.path=/var/tempo", "--auth.enabled=false", "--search.enabled=true"]
     ports:
     - "14250:14250"
@@ -112,6 +130,8 @@ services:
 
   grafana:
     image: grafana/grafana:9.1.7
+    networks:
+    - backnet
     ports:
     - "3000:3000"
     volumes:
@@ -132,3 +152,9 @@ services:
 volumes:
   farpostbooks_backend-db-data:
     name: farpostbooks_backend-db-data
+  images:
+    name: images
+
+networks:
+  backnet:
+    driver: bridge
