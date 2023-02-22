@@ -142,7 +142,8 @@ dmypy.json
 cython_debug/
 
 # Images from Google Books API
-images/*
+images/*.jpeg
+!images/not_found.jpeg
 
 # Redis
 redis_data/
