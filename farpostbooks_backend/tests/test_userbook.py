@@ -92,7 +92,6 @@ async def test_take_book(
 async def test_return_book(
     fastapi_app: FastAPI,
     user_client: AsyncClient,
-    admin_client: AsyncClient,
     fake: Faker,
 ) -> None:
     """Тест эндпоинта для возвращения книги пользователем."""
