@@ -4,6 +4,7 @@ from importlib import metadata
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import UJSONResponse
+from fastapi.staticfiles import StaticFiles
 from tortoise.contrib.fastapi import register_tortoise
 
 from farpostbooks_backend.db.config import TORTOISE_CONFIG
@@ -21,11 +22,23 @@ from farpostbooks_backend.web.lifetime import (
 )
 
 
+def enable_metrics(app: FastAPI) -> None:
+    """
+    Включение метрик и логирования.
+
+    :param app: Приложение FastAPI.
+    """
+    app.add_route("/metrics", metrics)
+    app.add_middleware(PrometheusMiddleware, app_name=settings.environment)
+    setting_otlp(app, settings.environment, settings.OTLP_GRPC_ENDPOINT)
+    logging.getLogger("uvicorn.access").addFilter(EndpointFilter())
+
+
 def get_app() -> FastAPI:
     """
     Конструктор для FastAPI приложения.
 
-    :return: Приложение fastapi.
+    :return: Приложение FastAPI.
     """
     app = FastAPI(
         title="farpostbooks_backend",
@@ -40,12 +53,12 @@ def get_app() -> FastAPI:
     register_startup_event(app)
     register_shutdown_event(app)
 
-    # Конфигурация для роутеров.
-    app.add_middleware(PrometheusMiddleware, app_name=settings.environment)
-    setting_otlp(app, settings.environment, settings.OTLP_GRPC_ENDPOINT)
+    # Конфигурация главного роутера и статики.
+    app.mount("/images", StaticFiles(directory="images"), name="images")
     app.include_router(router=api_router, prefix="/api")
-    app.add_route("/metrics", metrics)
-    logging.getLogger("uvicorn.access").addFilter(EndpointFilter())
+
+    # Метрики и логирование
+    enable_metrics(app)
 
     # CORS
     app.add_middleware(
