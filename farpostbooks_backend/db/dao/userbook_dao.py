@@ -1,9 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
 
-from fastapi import HTTPException
-from starlette import status
-
 from farpostbooks_backend.db.models.book_model import BookModel
 from farpostbooks_backend.db.models.userbook_model import UserBookModel
 
@@ -21,40 +18,54 @@ class UserBookDAO:
 
         :param telegram_id: Telegram ID пользователя.
         :param book_id: ISBN выбранной книги.
-        :raises HTTPException: Ошибка, если не удалось взять книгу.
         :return: Модель взятие книги.
         """
-        is_exist = await BookModel.get_or_none(id=book_id)
-        if is_exist is None:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Пользователь не может взять несуществующую книгу.",
-            )
-
-        user_already_have_book = await UserBookModel.filter(
-            user_id=telegram_id,
-            back_timestamp=None,
-        ).count()
-        if user_already_have_book:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Пользователь не может взять несколько книг.",
-            )
-
-        another_user_have_book = await UserBookModel.filter(
-            book_id=book_id,
-            back_timestamp=None,
-        ).count()
-        if another_user_have_book:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="Несколько пользователей не могут взять одну книгу.",
-            )
-
         return await UserBookModel.create(
             user_id=telegram_id,
             book_id=book_id,
         )
+
+    @staticmethod
+    async def get_books_count_by_user(
+        telegram_id: int,
+    ) -> int:
+        """
+        Взятие нескольких книг для одного пользователя.
+
+        :param telegram_id: Telegram ID пользователя.
+        :return: Количество взятых книг.
+        """
+        return await UserBookModel.filter(
+            user_id=telegram_id,
+            back_timestamp=None,
+        ).count()
+
+    @staticmethod
+    async def get_users_count_by_book(
+        book_id: int,
+    ) -> int:
+        """
+        Взятие одной книги для нескольких пользователей.
+
+        :param book_id: ISBN выбранной книги.
+        :return: Количество взитий книги.
+        """
+        return await UserBookModel.filter(
+            book_id=book_id,
+            back_timestamp=None,
+        ).count()
+
+    @staticmethod
+    async def check_book_exist(
+        book_id: int,
+    ) -> Optional[BookModel]:
+        """
+        Существование книги по ISBN.
+
+        :param book_id: ISBN выбранной книги.
+        :return: Модель искоемой книги.
+        """
+        return await BookModel.get_or_none(id=book_id)
 
     @staticmethod
     async def return_book(

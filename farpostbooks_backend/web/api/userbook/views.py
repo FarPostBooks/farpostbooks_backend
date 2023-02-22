@@ -28,7 +28,33 @@ async def take_book(
     :param book_id: ISBN книги.
     :param current_user: Текущий пользователь по JWT токену.
     :param user_book_dao: DAO для модели книг юзера.
+    :raises HTTPException: Ошибка, если не удалось взять книгу.
     """
+    is_exist = await user_book_dao.check_book_exist(book_id=book_id)
+    if is_exist is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Пользователь не может взять несуществующую книгу.",
+        )
+
+    user_already_have_book = await user_book_dao.get_books_count_by_user(
+        telegram_id=current_user.id,
+    )
+    if user_already_have_book:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Пользователь не может взять несколько книг.",
+        )
+
+    another_user_have_book = await user_book_dao.get_users_count_by_book(
+        book_id=book_id,
+    )
+    if another_user_have_book:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Несколько пользователей не могут взять одну книгу.",
+        )
+
     await user_book_dao.take_book(
         telegram_id=current_user.id,
         book_id=book_id,
