@@ -41,7 +41,7 @@ async def test_get_user_books(
     assert (not user_books["books"]) and (user_books["current"] is None)
 
     await dao.take_book(telegram_id=2, book_id=books[0].id)
-    await dao.return_book(telegram_id=2, book_id=books[0].id, rating=5)
+    await dao.return_book(telegram_id=2, rating=5)
     await dao.take_book(telegram_id=2, book_id=books[1].id)
 
     response = await user_client.get(url)
@@ -77,7 +77,7 @@ async def test_take_book(
     response = await user_client.post(url)
     assert response.status_code == status.HTTP_200_OK
 
-    user_book = await dao.get_current_book(telegram_id=2)
+    user_book = await dao.get_unreturned_book(telegram_id=2)
     assert user_book is not None
     assert user_book.book.id == book.id
 
@@ -92,7 +92,6 @@ async def test_take_book(
 async def test_return_book(
     fastapi_app: FastAPI,
     user_client: AsyncClient,
-    admin_client: AsyncClient,
     fake: Faker,
 ) -> None:
     """Тест эндпоинта для возвращения книги пользователем."""
@@ -100,7 +99,7 @@ async def test_return_book(
     dao = UserBookDAO()
 
     isbn = int(fake.isbn13().replace("-", ""))
-    rating = secrets.randbelow(5)
+    rating = secrets.choice(range(1, 6))
     await book_dao.create_book_model(
         book_id=isbn,
         name=fake.sentence(nb_words=5),
@@ -115,7 +114,7 @@ async def test_return_book(
         book_id=isbn,
     )
 
-    url = fastapi_app.url_path_for("return_book", book_id=isbn)
+    url = fastapi_app.url_path_for("return_book")
 
     response = await user_client.put(
         url,

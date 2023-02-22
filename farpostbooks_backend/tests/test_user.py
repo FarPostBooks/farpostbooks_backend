@@ -152,3 +152,41 @@ async def test_update_me(
     assert updated_user.name == new_name
     assert updated_user.position == new_position
     assert updated_user.about == "user"
+
+
+@pytest.mark.anyio
+async def test_get_user(
+    fastapi_app: FastAPI,
+    user_client: AsyncClient,
+    fake: Faker,
+) -> None:
+    """Тест эндпоинта с проверкой существования юзера и правильной работы БД."""
+    dao = UserDAO()
+
+    telegram_id = secrets.randbelow(1000000000000)
+    await dao.create_user_model(
+        telegram_id=telegram_id,
+        name=f"{fake.first_name()} {fake.last_name()}",
+        position=fake.job(),
+        about=fake.sentence(nb_words=10),
+    )
+
+    url = fastapi_app.url_path_for("get_user", telegram_id=telegram_id)
+    response = await user_client.get(url)
+
+    assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.anyio
+async def test_fail_get_user(
+    fastapi_app: FastAPI,
+    user_client: AsyncClient,
+    fake: Faker,
+) -> None:
+    """Тест ошибки эндпоинта с проверкой существования юзера и правильной работы БД."""
+    url = fastapi_app.url_path_for(
+        "get_user",
+        telegram_id=secrets.randbelow(1000000000000),
+    )
+    response = await user_client.get(url)
+    assert response.status_code == status.HTTP_404_NOT_FOUND

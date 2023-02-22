@@ -41,7 +41,6 @@ async def test_search_book(
 async def test_create_book(
     fastapi_app: FastAPI,
     admin_client: AsyncClient,
-    fake: Faker,
 ) -> None:
     """Тест эндпоинта с добавлением данных о книге в БД."""
     dao = BookDAO()
@@ -57,6 +56,22 @@ async def test_create_book(
     assert json_response["id"] == book.id
     assert json_response["name"] == book.name
     assert json_response["description"] == book.description
+
+
+@pytest.mark.anyio
+async def test_fail_create_book(
+    fastapi_app: FastAPI,
+    admin_client: AsyncClient,
+) -> None:
+    """Тест ошибки эндпоинта с добавлением данных о книге в БД."""
+    dao = BookDAO()
+
+    isbn = 1
+    url = fastapi_app.url_path_for("create_book", book_id=isbn)
+    response = await admin_client.post(url)
+    book = await dao.search_book(isbn)
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert book is None
 
 
 @pytest.mark.anyio
