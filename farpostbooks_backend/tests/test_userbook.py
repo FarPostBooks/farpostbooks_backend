@@ -56,7 +56,6 @@ async def test_get_user_books(
 async def test_take_book(
     fastapi_app: FastAPI,
     user_client: AsyncClient,
-    admin_client: AsyncClient,
     fake: Faker,
 ) -> None:
     """Тест эндпоинта для взятия книги с полки пользователем."""
@@ -81,8 +80,65 @@ async def test_take_book(
     assert user_book is not None
     assert user_book.book.id == book.id
 
+
+@pytest.mark.anyio
+# а вообще нужен ли этот тест?
+async def test_fail_get_ureturned_book(
+    fastapi_app: FastAPI,
+) -> None:
+    """Тест ошибки на существование книги в эндпоинте."""
+    dao = UserBookDAO()
+
+    isbn = 9785911511036
+    fastapi_app.url_path_for("take_book", book_id=isbn)
+    user_book = await dao.get_unreturned_book(telegram_id=3)
+    assert user_book is None
+
+
+@pytest.mark.anyio
+async def test_fail_check_unreturned_books(
+    fastapi_app: FastAPI,
+    user_client: AsyncClient,
+    fake: Faker,
+) -> None:
+    """Тест ошибки на невозможность взятия несколько книг в эндпоинте."""
+    book_dao = BookDAO()
+    isbn = int(fake.isbn13().replace("-", ""))
+    await book_dao.create_book_model(
+        book_id=isbn,
+        name=fake.sentence(nb_words=5),
+        description=fake.sentence(nb_words=5),
+        image=fake.image_url(),
+        author=fake.name(),
+        publish=fake.year(),
+    )
+    url = fastapi_app.url_path_for("take_book", book_id=isbn)
+    await user_client.post(url)
+
     response = await user_client.post(url)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.anyio
+async def test_fail_check_book_availability(
+    fastapi_app: FastAPI,
+    user_client: AsyncClient,
+    admin_client: AsyncClient,
+    fake: Faker,
+) -> None:
+    """Тест ошибки на невозможность взять одну книгу в эндпоинте."""
+    book_dao = BookDAO()
+    isbn = int(fake.isbn13().replace("-", ""))
+    await book_dao.create_book_model(
+        book_id=isbn,
+        name=fake.sentence(nb_words=5),
+        description=fake.sentence(nb_words=5),
+        image=fake.image_url(),
+        author=fake.name(),
+        publish=fake.year(),
+    )
+    url = fastapi_app.url_path_for("take_book", book_id=isbn)
+    await user_client.post(url)
 
     response = await admin_client.post(url)
     assert response.status_code == status.HTTP_409_CONFLICT
