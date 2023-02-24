@@ -82,26 +82,12 @@ async def test_take_book(
 
 
 @pytest.mark.anyio
-# а вообще нужен ли этот тест?
-async def test_fail_get_ureturned_book(
-    fastapi_app: FastAPI,
-) -> None:
-    """Тест ошибки на существование книги в эндпоинте."""
-    dao = UserBookDAO()
-
-    isbn = 9785911511036
-    fastapi_app.url_path_for("take_book", book_id=isbn)
-    user_book = await dao.get_unreturned_book(telegram_id=3)
-    assert user_book is None
-
-
-@pytest.mark.anyio
 async def test_fail_check_unreturned_books(
     fastapi_app: FastAPI,
     user_client: AsyncClient,
     fake: Faker,
 ) -> None:
-    """Тест ошибки на невозможность взятия несколько книг в эндпоинте."""
+    """Тест ошибки на невозможность взятия нескольких книг одним пользователем."""
     book_dao = BookDAO()
     isbn = int(fake.isbn13().replace("-", ""))
     await book_dao.create_book_model(
@@ -126,7 +112,7 @@ async def test_fail_check_book_availability(
     admin_client: AsyncClient,
     fake: Faker,
 ) -> None:
-    """Тест ошибки на невозможность взять одну книгу в эндпоинте."""
+    """Тест ошибки на невозможность взятия одной книги несколькими пользователями."""
     book_dao = BookDAO()
     isbn = int(fake.isbn13().replace("-", ""))
     await book_dao.create_book_model(
