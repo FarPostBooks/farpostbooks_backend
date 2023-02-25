@@ -18,7 +18,7 @@ from farpostbooks_backend.web.api.user.schema import (
     TelegramUserDTO,
 )
 
-router = APIRouter()
+router = APIRouter(redirect_slashes=False)
 
 
 @router.get("/me", response_model=UserModelDTO)

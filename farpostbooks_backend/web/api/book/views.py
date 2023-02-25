@@ -16,10 +16,10 @@ from farpostbooks_backend.web.api.schema import (
     UserModelDTO,
 )
 
-router = APIRouter()
+router = APIRouter(redirect_slashes=False)
 
 
-@router.post("/{book_id}", response_model=BookModelDTO)
+@router.post("/{book_id}/", response_model=BookModelDTO)
 async def create_book(
     book_id: int,
     _: UserModel = Security(get_current_user, scopes=["admin"]),
