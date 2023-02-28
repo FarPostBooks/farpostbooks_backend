@@ -1,7 +1,7 @@
 import enum
 from pathlib import Path
 from tempfile import gettempdir
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseSettings
 from yarl import URL
@@ -29,6 +29,7 @@ class Settings(BaseSettings):
 
     host: str = "127.0.0.1"
     port: int = 8000
+    origins: List[str] = []
     # Количество воркеров для uvicorn
     workers_count: int = 1
     # Включить перезагрузку uvicorn
