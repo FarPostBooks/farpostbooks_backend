@@ -92,29 +92,7 @@ class BookDAO:
         ).all()
 
     @staticmethod
-    async def get_list_not_taken_books(
-        limit: int = 10,
-        offset: int = 0,
-    ) -> List[BookModel]:
-        """
-        Получить список не взятых книг.
-
-        :param limit: Максимальное количество выгружаемых книг.
-        :param offset: Сдвиг от первой книги.
-        :return: Список из книг со сдвигом.
-        """
-        return (
-            await BookModel.all()
-            .filter(
-                back_timestamp=None,
-            )
-            .prefetch_related("user_books")
-            .limit(limit)
-            .offset(offset)
-        )
-
-    @staticmethod
-    async def get_list_books_taken(
+    async def get_not_taken_books(
         limit: int = 10,
         offset: int = 0,
     ) -> List[BookModel]:
@@ -129,6 +107,30 @@ class BookDAO:
             await BookModel.all()
             .filter(
                 back_timestamp=not None,
+                get_timestamp=not None,
+            )
+            .prefetch_related("user_books")
+            .limit(limit)
+            .offset(offset)
+        )
+
+    @staticmethod
+    async def get_taken_books(
+        limit: int = 10,
+        offset: int = 0,
+    ) -> List[BookModel]:
+        """
+        Получить список не взятых книг.
+
+        :param limit: Максимальное количество выгружаемых книг.
+        :param offset: Сдвиг от первой книги.
+        :return: Список из книг со сдвигом.
+        """
+        return (
+            await BookModel.all()
+            .filter(
+                back_timestamp=not None,
+                get_timestamp=not None,
             )
             .prefetch_related("user_books")
             .limit(limit)

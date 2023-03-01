@@ -90,3 +90,37 @@ async def get_books(
     :return: Возвращаем список книг.
     """
     return await book_dao.get_books(**scroll_dto.dict(exclude_none=True))
+
+
+@router.get("/", response_model=List[BookIntroduction])
+async def get_not_taken_books(
+    scroll_dto: ScrollDTO = Depends(),
+    _: UserModelDTO = Depends(get_current_user),
+    book_dao: BookDAO = Depends(),
+) -> List[BookModel]:
+    """
+    Общий список не взятых книг (ограничен по limit/offset).
+
+    :param _: Текущий пользователь по JWT токену.
+    :param scroll_dto: DTO для работы со скроллингом.
+    :param book_dao: DAO для модели книги.
+    :return: Возвращаем список книг.
+    """
+    return await book_dao.get_not_taken_books(**scroll_dto.dict(exclude_none=True))
+
+
+@router.get("/", response_model=List[BookIntroduction])
+async def get_taken_books(
+    scroll_dto: ScrollDTO = Depends(),
+    _: UserModelDTO = Depends(get_current_user),
+    book_dao: BookDAO = Depends(),
+) -> List[BookModel]:
+    """
+    Общий список не взятых книг (ограничен по limit/offset).
+
+    :param _: Текущий пользователь по JWT токену.
+    :param scroll_dto: DTO для работы со скроллингом.
+    :param book_dao: DAO для модели книги.
+    :return: Возвращаем список книг.
+    """
+    return await book_dao.get_taken_books(**scroll_dto.dict(exclude_none=True))
