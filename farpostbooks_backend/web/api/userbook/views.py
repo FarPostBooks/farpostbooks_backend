@@ -10,10 +10,10 @@ from farpostbooks_backend.services.access_token import get_current_user
 from farpostbooks_backend.web.api.schema import ScrollDTO, UserModelDTO
 from farpostbooks_backend.web.api.userbook.schema import UserBookIntroduction, UserBooks
 
-router = APIRouter()
+router = APIRouter(redirect_slashes=False)
 
 
-@router.post("/me/books/{book_id}")
+@router.post("/me/books/{book_id}/")
 async def take_book(
     book_id: int,
     current_user: UserModelDTO = Depends(get_current_user),

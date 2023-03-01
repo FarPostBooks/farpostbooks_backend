@@ -2,7 +2,7 @@ from fastapi.routing import APIRouter
 
 from farpostbooks_backend.web.api import admin, book, monitoring, user, userbook
 
-api_router = APIRouter()
+api_router = APIRouter(redirect_slashes=False)
 api_router.include_router(
     monitoring.router,
 )

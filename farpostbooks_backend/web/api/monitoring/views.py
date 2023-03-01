@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-router = APIRouter()
+router = APIRouter(redirect_slashes=False)
 
 
 @router.get("/health")

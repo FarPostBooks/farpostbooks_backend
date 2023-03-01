@@ -8,7 +8,7 @@ from farpostbooks_backend.db.models.user_model import UserModel
 from farpostbooks_backend.services.access_token import get_current_user
 from farpostbooks_backend.web.api.schema import UserModelDTO, UserModelUpdateDTO
 
-router = APIRouter()
+router = APIRouter(redirect_slashes=False)
 
 
 @router.put("/", response_model=UserModelDTO)

@@ -56,6 +56,7 @@ def get_app() -> FastAPI:
     # Конфигурация главного роутера и статики.
     app.mount("/images", StaticFiles(directory="images"), name="images")
     app.include_router(router=api_router, prefix="/api")
+    app.router.redirect_slashes = False
 
     # Метрики и логирование
     enable_metrics(app)
@@ -63,7 +64,7 @@ def get_app() -> FastAPI:
     # CORS
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=settings.origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
