@@ -130,7 +130,7 @@ async def test_get_taken_books(
     assert not response.json()
 
     books = []
-    for _ in range(2):
+    for _ in range(5):
         isbn = int(fake.isbn13().replace("-", ""))
         books.append(
             await book_dao.create_book_model(
@@ -142,20 +142,20 @@ async def test_get_taken_books(
                 publish=fake.year(),
             ),
         )
-
-    await dao.take_book(telegram_id=2, book_id=books[1].id)
+    for index in range(2):
+        await dao.take_book(telegram_id=2, book_id=books[index].id)
 
     response = await user_client.get(
         url,
         params={
-            "limit": 2,
+            "limit": 5,
             "offset": 0,
         },
     )
-    assert response.json()[1]["id"] == books[1].id
-
-    response = await user_client.get(url)
-    assert response.json()[1]["id"] == books[1].id
+    for indx in range(2):
+        assert response.json()[indx]["id"] == books[indx].id
+        response = await user_client.get(url)
+        assert response.json()[indx]["id"] == books[indx].id
 
 
 @pytest.mark.anyio
@@ -176,7 +176,7 @@ async def test_get_not_taken_books(
     assert not response.json()
 
     books = []
-    for _ in range(2):
+    for _ in range(5):
         isbn = int(fake.isbn13().replace("-", ""))
         books.append(
             await book_dao.create_book_model(
@@ -188,17 +188,17 @@ async def test_get_not_taken_books(
                 publish=fake.year(),
             ),
         )
-
-    await dao.take_book(telegram_id=2, book_id=books[1].id)
+    for index in range(2):
+        await dao.take_book(telegram_id=2, book_id=books[index].id)
 
     response = await user_client.get(
         url,
         params={
-            "limit": 2,
+            "limit": 5,
             "offset": 0,
         },
     )
-    assert response.json()[0]["id"] == books[0].id
-
-    response = await user_client.get(url)
-    assert response.json()[0]["id"] == books[0].id
+    for indx in range(2, 4):
+        assert response.json()[indx]["id"] == books[indx].id
+        response = await user_client.get(url)
+        assert response.json()[indx]["id"] == books[indx].id
