@@ -191,3 +191,21 @@ async def test_get_not_taken_books(
     books_from_dao = await book_dao.get_books(FilterFlag.not_taken)
     for book_index, book_from_dao in enumerate(books_from_dao):
         assert books_from_response[book_index]["id"] == book_from_dao.id
+
+
+@pytest.mark.anyio
+async def test_not_permitted_member_get_books(
+    fastapi_app: FastAPI,
+    user_client: AsyncClient,
+    fake: Faker,
+) -> None:
+    """Тест эндпоинта с получением списка книг с указанием флага не из Enum'а."""
+    url = fastapi_app.url_path_for("get_books")
+
+    response = await user_client.get(
+        url,
+        params={
+            "flag": "RANDOM",
+        },
+    )
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
