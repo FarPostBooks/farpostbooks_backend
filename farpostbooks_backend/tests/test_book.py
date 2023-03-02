@@ -6,6 +6,7 @@ from starlette import status
 
 from farpostbooks_backend.db.dao.book_dao import BookDAO
 from farpostbooks_backend.db.dao.userbook_dao import UserBookDAO
+from farpostbooks_backend.web.api.enums import FilterFlag
 
 
 @pytest.mark.anyio
@@ -122,12 +123,7 @@ async def test_get_taken_books(
     book_dao = BookDAO()
     dao = UserBookDAO()
 
-    isbn = int(fake.isbn13().replace("-", ""))
-    url = fastapi_app.url_path_for("get_taken_books")
-
-    response = await user_client.get(url)
-    assert response.status_code == status.HTTP_200_OK
-    assert not response.json()
+    url = fastapi_app.url_path_for("get_books")
 
     books = []
     for _ in range(5):
@@ -148,14 +144,13 @@ async def test_get_taken_books(
     response = await user_client.get(
         url,
         params={
-            "limit": 5,
-            "offset": 0,
+            "flag": FilterFlag.taken.value,
         },
     )
-    for indx in range(2):
-        assert response.json()[indx]["id"] == books[indx].id
-        response = await user_client.get(url)
-        assert response.json()[indx]["id"] == books[indx].id
+    books_from_response = response.json()
+    books_from_dao = await book_dao.get_books(FilterFlag.taken)
+    for book_index, book_from_dao in enumerate(books_from_dao):
+        assert books_from_response[book_index]["id"] == book_from_dao.id
 
 
 @pytest.mark.anyio
@@ -168,12 +163,7 @@ async def test_get_not_taken_books(
     book_dao = BookDAO()
     dao = UserBookDAO()
 
-    isbn = int(fake.isbn13().replace("-", ""))
-    url = fastapi_app.url_path_for("get_not_taken_books")
-
-    response = await user_client.get(url)
-    assert response.status_code == status.HTTP_200_OK
-    assert not response.json()
+    url = fastapi_app.url_path_for("get_books")
 
     books = []
     for _ in range(5):
@@ -194,11 +184,10 @@ async def test_get_not_taken_books(
     response = await user_client.get(
         url,
         params={
-            "limit": 5,
-            "offset": 0,
+            "flag": FilterFlag.not_taken.value,
         },
     )
-    for indx in range(2, 4):
-        assert response.json()[indx]["id"] == books[indx].id
-        response = await user_client.get(url)
-        assert response.json()[indx]["id"] == books[indx].id
+    books_from_response = response.json()
+    books_from_dao = await book_dao.get_books(FilterFlag.not_taken)
+    for book_index, book_from_dao in enumerate(books_from_dao):
+        assert books_from_response[book_index]["id"] == book_from_dao.id
