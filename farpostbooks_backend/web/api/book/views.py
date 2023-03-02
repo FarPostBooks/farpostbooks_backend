@@ -9,10 +9,10 @@ from farpostbooks_backend.db.models.book_model import BookModel
 from farpostbooks_backend.db.models.user_model import UserModel
 from farpostbooks_backend.services.access_token import get_current_user
 from farpostbooks_backend.services.search_book import search_google_books
+from farpostbooks_backend.web.api.book.schema import BooksDTO
 from farpostbooks_backend.web.api.schema import (
     BookIntroduction,
     BookModelDTO,
-    ScrollDTO,
     UserModelDTO,
 )
 
@@ -77,7 +77,7 @@ async def search_book(
 
 @router.get("/", response_model=List[BookIntroduction])
 async def get_books(
-    scroll_dto: ScrollDTO = Depends(),
+    books_dto: BooksDTO = Depends(),
     _: UserModelDTO = Depends(get_current_user),
     book_dao: BookDAO = Depends(),
 ) -> List[BookModel]:
@@ -85,8 +85,8 @@ async def get_books(
     Общий список книг (ограничен по limit/offset).
 
     :param _: Текущий пользователь по JWT токену.
-    :param scroll_dto: DTO для работы со скроллингом.
+    :param books_dto: DTO для запроса списка книг.
     :param book_dao: DAO для модели книги.
     :return: Возвращаем список книг.
     """
-    return await book_dao.get_books(**scroll_dto.dict(exclude_none=True))
+    return await book_dao.get_books(**books_dto.dict(exclude_none=True))

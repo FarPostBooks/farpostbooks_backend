@@ -2,8 +2,11 @@ from datetime import datetime, timedelta
 from typing import List, Optional
 
 from tortoise.expressions import Q
+from tortoise.functions import Count
+from tortoise.queryset import QuerySet
 
 from farpostbooks_backend.db.models.book_model import BookModel
+from farpostbooks_backend.web.api.enums import FilterFlag
 
 
 class BookDAO:
@@ -67,17 +70,40 @@ class BookDAO:
 
     @staticmethod
     async def get_books(
+        flag: FilterFlag = FilterFlag.all,
         limit: int = 10,
         offset: int = 0,
     ) -> List[BookModel]:
         """
-        Выгрузка списка книг на главную страницу.
+        Выгрузка списка книг для выдачи на главной странице.
 
+        :param flag: Фильтр для выдачи списка книг.
         :param limit: Максимальное количество выгружаемых книг.
         :param offset: Сдвиг от первой книги.
         :return: Список из книг со сдвигом.
         """
-        return await BookModel.all().limit(limit).offset(offset)
+        books_qs: QuerySet[BookModel] = BookModel.all()
+        if flag == FilterFlag.taken:
+            books_qs = books_qs.filter(
+                user_books__isnull=False,
+                user_books__back_timestamp__isnull=True,
+            )
+        if flag == FilterFlag.not_taken:
+            books_qs = books_qs.annotate(
+                count_user_books=Count(
+                    "user_books",
+                    _filter=Q(user_books__back_timestamp__isnull=True),
+                ),
+            ).filter(
+                Q(count_user_books=0),
+            )
+        return (
+            await books_qs.distinct()
+            .prefetch_related("user_books")
+            .all()
+            .limit(limit)
+            .offset(offset)
+        )
 
     @staticmethod
     async def get_new_books() -> List[BookModel]:
