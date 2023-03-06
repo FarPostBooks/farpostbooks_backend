@@ -29,8 +29,8 @@ async def send_message(
     """
     try:
         await bot.send_message(chat_id=chat_id, text=text)
-    except exceptions.TelegramForbiddenError:
-        logging.error(f"Target [ID:{chat_id}]: got TelegramForbiddenError")
+    except (exceptions.TelegramBadRequest, exceptions.TelegramForbiddenError):
+        logging.error(f"Target [ID:{chat_id}]: got TelegramError")
     except exceptions.TelegramRetryAfter as error:
         logging.error(
             f"Target [ID:{chat_id}]: Flood limit is exceeded."
@@ -96,6 +96,7 @@ class WorkerSettings:
             weekday={0},
             hour=0,
             minute=0,
+            run_at_startup=False,
         ),
     ]
     redis_settings = RedisSettings(settings.redis_host, settings.redis_port)
