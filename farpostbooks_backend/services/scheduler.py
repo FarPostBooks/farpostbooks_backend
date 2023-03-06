@@ -91,6 +91,11 @@ class WorkerSettings:
 
     on_startup = startup
     cron_jobs = [
-        cron("farpostbooks_backend.services.scheduler.new_books", weekday={0}),
+        cron(
+            "farpostbooks_backend.services.scheduler.new_books",
+            weekday={0},
+            hour=0,
+            minute=0,
+        ),
     ]
     redis_settings = RedisSettings(settings.redis_host, settings.redis_port)
